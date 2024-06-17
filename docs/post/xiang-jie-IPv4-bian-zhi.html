@@ -1,0 +1,2022 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="//cdn.staticfile.net/Primer/21.0.7/primer.css" rel="stylesheet" />
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="IP 编址指的的是 IP 地址编排技术，它涉及 IP 地址的分配和管理过程。">
+<meta property="og:title" content="详解IPv4编址">
+<meta property="og:description" content="IP 编址指的的是 IP 地址编排技术，它涉及 IP 地址的分配和管理过程。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://Benchary.github.io/post/xiang-jie-IPv4-bian-zhi.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>详解IPv4编址</title>
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">详解IPv4编址</h1>
+<div class="title-right">
+    <a href="https://Benchary.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Benchary/Benchary.github.io/issues/1" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><p>IP 编址指的的是 IP 地址编排技术，它涉及 IP 地址的分配和管理过程。</p>
+<p>如果作为计算机网络技术人员不会规划设计 IP 地址，是非常可怕的一件事，但是很多专业人士，包括一些具有丰富实践经验的技术人员在划分 IP 地址时表现的格外外行，需借助第三方计算工具。而且 IP 地址绝不是简单设置子网掩码和网关这么简单。一个专业的计算机网络工程师从子网掩码划分就能看出基本的网络构造。</p>
+<p>IP 地址的划分是整个网络架构设计的基础，本文主要介绍并分析 IP 地址相关的重要技术。</p>
+<blockquote>
+<p>如无特殊解释，本文 IP 地址，仅指 IPv4 地址，虽然 IPv6 正在大力推广部署，但是我们日常接触的企业网、家庭网最多的还是 IPv4 地址。</p>
+</blockquote>
+<h1>IP 编址技术</h1>
+<ul>
+<li><strong>IP 设置格式</strong></li>
+<li><strong>关于 2 进制换算</strong></li>
+<li><strong>IP 地址划分</strong></li>
+<li><strong>有类和无类网络</strong></li>
+<li><strong>连续的网络</strong></li>
+<li><strong>IP 路由汇总</strong></li>
+<li><strong>反掩码</strong></li>
+</ul>
+<h1>IP 设置格式</h1>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 192.168.255.87  |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.156 |
++-------------+-----------------+
+|   GateWay   | 192.168.255.99  |
++-------------+-----------------+
+</code></pre>
+<h1>关于 2 进制换算</h1>
+<p>IP 地址通常与 2的次方 相关，主要是因为它们是基于 2 进制系统设计的。在计算机科学和网络通信中，2 进制系统是最基础的数字系统，它使用两个数字（通常是 0 和 1 ）来表示所有数值。以下是几个原因，解释了为什么IP地址通常与2的次方相关：</p>
+<ul>
+<li>计算机和网络设备使用 2 进制系统来处理和存储数据。IP地址，无论是 IPv4 还是 IPv6 ，都是 2 进制数的表示形式。</li>
+<li>IPv4 地址由 32 位 2 进制组成，通常被分为四组，每组 8 位（一个字节）。每组 8 位可以表示 2^8（即 256）个不同的值。因此，IPv4地址的范围是从 0.0.0.0 到 255.255.255.255 ，总共有 2^32 个可能的地址。</li>
+</ul>
+<h2>2 的次方表</h2>
+<blockquote>
+<p>2 的次方表,通过这张表发现可以分配 <code class="notranslate">4294967296</code> IP 地址</p>
+<pre class="notranslate"><code class="notranslate">2^0=1
+2^1=2         
+2^2=4
+2^3=8
+2^4=16
+2^5=32
+2^6=64
+2^7=128
+2^8=256
+2^9=512
+2^10=1024
+2^11=2048
+2^12=4096
+2^13=8192
+2^14=16384
+2^15=32768
+2^16=65536
+2^17=131072
+2^18=262144
+2^19=524288
+2^20=1048576
+2^21=2097152
+2^22=4194304
+2^23=8388608
+2^24=16777216
+2^25=33554432
+2^26=67108864
+2^27=134217728
+2^28=268435456
+2^29=536870912
+2^30=1073741824
+2^31=2147483648
+2^32=4294967296
+</code></pre>
+</blockquote>
+<h2>IP 地址 10 进制与 2 进制互转换计算</h2>
+<pre class="notranslate"><code class="notranslate">+---------+--------------------------------------------+
+| Decimal |     192  .    168   .    255   .     87    |      
++---------+--------------------------------------------+
+| Binary  | 11000000 . 10101000 . 11111111 . 10101111  |
++---------+--------------------------------------------+
+| Bit     |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits   |
++---------+--------------------------------------------+
+| Byte    |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte   |
++---------+--------------------------------------------+
+</code></pre>
+<h3>2 进制转 10 进制换算</h3>
+<p>示例 1 ： <code class="notranslate">11111111</code> 转换 10 进制数</p>
+<p>因为 IPv4 地址一共 32 位的 <code class="notranslate">10</code> 作为 2 进制数组成，并且每 8 位为1组以 <code class="notranslate">.</code> 分隔，那么如上述 8 位全为 <code class="notranslate">1</code> 的2 进制数，转成 10 进制 <code class="notranslate">255</code> ，计算过程如下</p>
+<pre class="notranslate"><code class="notranslate">+---------+------------------------------------------------+
+| Binary  |   1     1     1     1     1     1     1     1  |
++---------+------------------------------------------------+
+| output  |  2^7 + 2^6 + 2^5 + 2^4 + 2^3 + 2^2 + 2^1 + 2^0 |
++---------+------------------------------------------------+
+| total   |  128 +  64 + 32  + 16  +  8  +  4  +  2  +  1  |
++---------+------------------------------------------------+
+| Decimal |                      255                       |
++---------+------------------------------------------------+     
+</code></pre>
+<p>示例 2 ：<code class="notranslate">10101000</code>  转换 10 进制数</p>
+<p>因为 IPv4 地址一共 32 位的 <code class="notranslate">10</code> 作为 2 进制数组成，并且每 8 位为1组以 <code class="notranslate">.</code> 分隔，那么如上述 8 位为 <code class="notranslate">10101000</code> 的2 进制数，转成 10 进制 <code class="notranslate">168</code> ，计算过程如下</p>
+<pre class="notranslate"><code class="notranslate">+---------+------------------------------------------------+
+| Binary  |   1     0     1     0     1     0     0     0  |
++---------+------------------------------------------------+
+| output  |  2^7 + 2^6 + 2^5 + 2^4 + 2^3 + 2^2 + 2^1 + 2^0 |
++---------+------------------------------------------------+
+| total   |  128 +  0  +  32 +  0  +  8  +  0  +  0  +  0  |
++---------+------------------------------------------------+
+| Decimal |                      168                       |
++---------+------------------------------------------------+     
+</code></pre>
+<blockquote>
+<p>可以看到 为 <code class="notranslate">0</code> 的数值不需要做 2 的次方计算，直接为 <code class="notranslate">0</code>，即可，只要计算为 <code class="notranslate">1</code> 的值</p>
+</blockquote>
+<h3>10 进制转 2 进制换算</h3>
+<p>示例 1 :  <code class="notranslate">87</code> 转换 2 进制数</p>
+<p>如果说 2 进制转 10 进制方便我们理解 IP 的组成结构，那么 10 进制转 2 进制，则在 IP 划分中比较常见，具体换算过程如下</p>
+<pre class="notranslate"><code class="notranslate">87 除以 2，商：43  余：1
+43 除以 2，商：21  余：1
+21 除以 2，商：10  余：1
+10 除以 2，商：5  余：0
+5 除以 2，商：2  余：1
+2 除以 2，商：1  余：0
+1 除以 2，商：0  余：1
+</code></pre>
+<p>由于商已经为 0，我们停止除法操作。再通过余数的 <strong>逆排序</strong> ，此时得到的 2 进制表示 <code class="notranslate">1010111</code> 就是 87 的二进制形式。</p>
+<blockquote>
+<p>但在IP地址的上下文中，为了保持每个部分都是 8 位，我们通常会保留前导零，所以 <code class="notranslate">87</code> 在IP地址中的 2 进制表示是 <code class="notranslate">01010111</code>。</p>
+</blockquote>
+<h1>IP 地址划分</h1>
+<p>已经知道了可以分配 <code class="notranslate">4294967296</code> 全局 IP 地址，但是为了便于分配管理，并且满足功能上的使用、RFC 通过 <strong>起始位</strong> 对其进行了划分了 <strong>A、B、C、D、E</strong> 几大类。</p>
+<blockquote>
+<p>需要注意的一点，这是以<strong>类</strong>的方式进行 IP 地址划分，用于分配各个不同领域的使用，是通过 <strong>起始位划分</strong> ，切忌与 <strong>子网掩码划分</strong> 相混淆</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-----------------------------+
+|  Class  |            IP  range        |  
++---------+-----------------------------+
+|   A     | 1.0.0.0 - 126.255.255.255   | 
++---------+-----------------------------+
+|   B     | 128.0.0.0 - 191.255.255.255 |
++---------+-----------------------------+
+|   C     | 192.0.0.0 - 223.255.255.255 |
++---------+-----------------------------+
+|   D     | 224.0.0.0 - 239.255.255.255 |
++---------+-----------------------------+
+|   E     | 240.0.0.0 - 255.255.255.255 |
++---------+-----------------------------+
+</code></pre>
+<h2>传统 IP 地址划分</h2>
+<p>上述这么划分其实是根据 IP 地址的网络号高位来决定的，如下划分过程</p>
+<ul>
+<li>A 类地址 <code class="notranslate">1.0.0.0 - 126.255.255.255</code> 范围为例
+<ul>
+<li><code class="notranslate">1.0.0.0</code> 转换如下 2 进制
+<ul>
+<li><code class="notranslate">0|0000001.00000000.00000000.00000000</code></li>
+</ul>
+</li>
+<li><code class="notranslate">126.255.255.255</code> 转换如下 2 进制
+<ul>
+<li><code class="notranslate">0|1111110.11111111.11111111.11111111</code></li>
+</ul>
+</li>
+<li>结构：前 8 位网络位，后 24 位主机位</li>
+<li>2 进制起始位：<code class="notranslate">0</code> （从左往右网络位第 1 位用于表示网络类别，剩下 7 位表示网络号）</li>
+<li>每个 A 类网络可用主机数：<code class="notranslate">2^24-2=16777214</code> 台 （除去网络地址全 0 和全 1 的两种情况，）</li>
+<li>计算全部 A 类可容纳的 IP 数量
+<ul>
+<li>根据第 1 字节计算可分配的网络数：<code class="notranslate">126</code>（因为从最高位第 1 个比特位计算，剩下 7 位用于网络，所以是2^7，但是<code class="notranslate">0.0.0.0</code>和<code class="notranslate">255.255.255.255</code>是 2 个不可用的 网络，去掉这两个 IP ）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>本地环回 IP 范围 <code class="notranslate">127.0.0.0 - 127.255.255.255</code>,共 <code class="notranslate">16777216</code>个地址</p>
+</blockquote>
+<ul>
+<li>
+<p>B 类地址 <code class="notranslate">128.0.0.0 - 191.255.255.255</code> 范围为例</p>
+<ul>
+<li><code class="notranslate">128.0.0.0</code> 转换如下 2 进制
+<ul>
+<li><code class="notranslate">10|000000.00000000.00000000.00000000</code></li>
+</ul>
+</li>
+<li><code class="notranslate">191.255.255.255</code> 转换如下 2 进制
+<ul>
+<li><code class="notranslate">10|111111.11111111.11111111.11111111</code></li>
+</ul>
+</li>
+<li>结构：前 16 位网络位，后 16 位主机位</li>
+<li>2 进制起始位：<code class="notranslate">10</code> （从左往右网络位第 1 位和第 2 位用于表示网络类别，剩下 14 位表示网络号）</li>
+<li>每个 B 类网络可用主机数：<code class="notranslate">2^16-2= 65534</code> 台 （除去网络地址全 0 和全 1 的两种情况，）</li>
+<li>计算全部 B 类可分配的网络数量
+<ul>
+<li>根据第 1、 第 2 字节计算可能分配的网络数：<code class="notranslate">2^14=16384</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>C 类地址 <code class="notranslate">192.0.0.0 - 223.255.255.255</code> 范围为例</p>
+<ul>
+<li><code class="notranslate">192.0.0.0</code> 转换如下 2 进制
+<ul>
+<li><code class="notranslate">110|00000.00000000.00000000.00000000</code></li>
+</ul>
+</li>
+<li><code class="notranslate">223.255.255.255</code> 转换如下 2 进制
+<ul>
+<li><code class="notranslate">110|11111.11111111.11111111.11111111</code></li>
+</ul>
+</li>
+<li>结构：前 24 位网络位，后 8 位主机位</li>
+<li>2 进制起始位：<code class="notranslate">110</code> （从左往右网络位第 1 、 2、3 位用于表示网络类别，剩下 21 位表示网络号）</li>
+<li>每个 C 类网络可用主机数：<code class="notranslate">2^8-2= 254</code> 台 （除去网络地址全 0 和全 1 的两种情况，）</li>
+<li>计算全部 C 类可分配的网络数量
+<ul>
+<li>根据第 1、 2 、 3 字节计算可分配的网络数：<code class="notranslate">2^21=2097152</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2>私网 IP 地址划分</h2>
+<p>由于 IPv4 地址紧缺，从全局 IPv4 地址中选取一部分 IPv4 用于内部网络的使用，这类 IP 地址无法在公共网络中路由，仅限于组织内部网络中路由。如需路由外部互联网必须通过 NAPT <strong>网络地址端口转换</strong> 才能路由</p>
+<pre class="notranslate"><code class="notranslate">+-------+-------------------------------+
+| Class |            IP  range          |  
++-------+-------------------------------+
+|   A   | 10.0.0.0 - 10.255.255.255     | 
++-------+-------------------------------+
+|   B   | 172.16.0.0 - 172.31.255.255   |
++-------+-------------------------------+
+|   C   | 192.168.0.0 - 192.168.255.255 |
++-------+-------------------------------+
+</code></pre>
+<p>然后按照 A、B、C 3 类 IP 地址，进行可用 IP 地址计算</p>
+<ul>
+<li>A 类网络 可用 IP <code class="notranslate">2^24-2=16777214</code> 个</li>
+<li>B 类网路 可用 IP <code class="notranslate">2^20-2=1048574</code> 个</li>
+<li>C 类网路 可用 IP <code class="notranslate">2^16-2=65534</code> 个</li>
+</ul>
+<p>如果按照上述分配网络，每类私网 IP 不做具体的分配，比如直接将<code class="notranslate">10.0.0.0</code>全部分配整个网络里，那网络没有层次性，网络结构混乱不堪，而且会散布网络广播，对网络性能造成很大的影响。所以下面将使用<code class="notranslate">子网掩码</code> 进行 IP 子网的划分.</p>
+<h2>传统子网掩码划分子网</h2>
+<blockquote>
+<p>阅读这节内容，必须得把上述内容全部理解透彻，否则计算子网掩码划分会很困难，很多网络工程师常年只会调试设备，但是却不会计算子网掩码划分，这是一个很糟糕的事情，它是路由技术基础中的基础，路由技术中很大一部分操作都会应用到子网的计算。</p>
+</blockquote>
+<h3>子网掩码介绍</h3>
+<ul>
+<li>
+<p><strong>子网掩码格式</strong>：子网掩码（Subnet Mask）是与IP地址一起使用的 32 位数值，它的作用是指定IP地址中的哪些位用于标识网络，哪些位用于标识主机。子网掩码的二进制表示中，网络部分为 1 ，主机部分为 0 。</p>
+</li>
+<li>
+<p><strong>标识网络和主机</strong>：子网掩码帮助路由器和交换机确定数据包应该在哪个网络中传输。如果两个 IP 地址的子网掩码相同，那么它们的网络部分相同，可以在同一网络内通信；如果子网掩码不同，那么网络部分不同，需要通过路由器进行跨网络通信。</p>
+</li>
+<li>
+<p><strong>划分子网</strong>：通过使用不同的子网掩码，可以将一个大的网络划分为多个小的子网，每个子网可以拥有一定数量的IP地址，用于分配给该子网内的设备。这有助于提高网络的可管理性和安全性。</p>
+</li>
+<li>
+<p><strong>确定地址范围</strong>：子网掩码还可以帮助确定一个给定网络的IP地址范围。通过将子网掩码与网络地址进行按位与操作，可以得到网络地址；通过将子网掩码取反并与网络地址进行按位与操作，可以得到广播地址。</p>
+</li>
+<li>
+<p><strong>路由决策</strong>：在路由选择过程中，子网掩码用于确定数据包的目标网络。如果数据包的目标 IP 地址与本地网络的网络地址匹配（即子网掩码与目标 IP 地址的网络部分相与的结果相同），则数据包将在同一网络内传输；否则，数据包将被发送到路由器，进行跨网络的路由选择。</p>
+</li>
+<li>
+<p><strong>CIDR 表示法</strong>：在 CIDR（无类别域间路由）表示法中，子网掩码后面的斜线（/）后面跟随一个数字，表示前多少位是网络部分。例如，一个子网掩码为 255.255.255.0 的网络，在 CIDR 表示法中可以写作 /24，因为前 24 位是网络部分。</p>
+</li>
+</ul>
+<p>总之，子网掩码是网络通信中不可或缺的一部分，它帮助确定网络的边界，划分子网，以及在路由选择中做出决策。</p>
+<blockquote>
+<p><strong>子网掩码</strong> 不会封装进 IP 数据包中进行路由传递，他只是划分主机的 IP 地址范围，且确定路由规则</p>
+</blockquote>
+<h3>子网掩码格式</h3>
+<p>以下是子网掩码的基本格式</p>
+<blockquote>
+<p>以下都是显示的子网掩码，均为有类网络</p>
+</blockquote>
+<blockquote>
+<p><strong>1</strong> 表示 <strong>网络位</strong>  <strong>0</strong> 表示 <strong>主机位</strong></p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------------------------------+---------------+
+|  Class  |             Binary                  |  Subnet Mask  | 
++---------+-------------------------------------+---------------+
+|   A     | 11111111.00000000.00000000.00000000 |   255.0.0.0   |
++---------+-------------------------------------+---------------+
+|   B     | 11111111.11111111.00000000.00000000 |  255.255.0.0  |
++---------+-------------------------------------+---------------+
+|   C     | 11111111.11111111.11111111.00000000 | 255.255.255.0 |
++---------+-------------------------------------+---------------+
+</code></pre>
+<h3>子网掩码标识网络和主机</h3>
+<p>以下是一个 C 类的 IP 地址示例，可以清晰的辨别出网络位是<code class="notranslate">192.168.25.X</code>,主机位是<code class="notranslate">82</code>，因为子网掩码部分 2 进制 <strong>网络位</strong> 全为 <strong>1</strong>， <strong>主机位</strong> 全为 <strong>0</strong></p>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+-------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    255   .     87   |      
++---------+-------------+-------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 11111111 . 10101111 |
++---------+-------------+-------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 00000000 |
++---------+-------------+-------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     0    |      
++-----------------------+-------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits  |
++-----------------------+-------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte  |
++-----------------------+-------------------------------------------+
+</code></pre>
+<h3>传统子网划分的作用</h3>
+<p>网络管理员通过借用 IP 地址中的主机位来创建子网，从而在一个大的网络中创建多个小的网络。子网划分技术通常是基于固定长度的子网掩码，意味着所有子网在同一个网络中都使用相同的子网掩码。这样划分出来的子网具有以下作用：</p>
+<ul>
+<li>
+<p><strong>节约IP地址资源</strong>：通过将大网络划分为多个小的子网，可以根据实际需要分配适量的IP地址给每个子网，避免了因分配整个网络块而造成的IP地址浪费。</p>
+</li>
+<li>
+<p><strong>提高网络性能</strong>：子网划分可以减少广播域的大小，降低广播流量，从而减轻网络拥塞，提升网络的整体性能和响应速度。广播只限于单个子网内部，不会传播到其他子网，减少了不必要的通信负担。</p>
+</li>
+<li>
+<p><strong>增强网络安全性</strong>：通过隔离不同的子网，可以限制不必要的网络流量进出特定的子网，增强了网络边界的安全控制，有助于防止网络攻击和未经授权的访问。</p>
+</li>
+<li>
+<p><strong>便于网络管理</strong>：子网划分使得网络管理员能够根据逻辑或物理布局更有效地组织和管理网络资源，比如按照部门、功能区域或者安全等级来划分子网，便于故障排查和策略实施。</p>
+</li>
+<li>
+<p><strong>适应网络扩展</strong>：随着组织的增长或网络需求的变化，子网划分提供了灵活的扩展能力，可以在现有网络结构上添加新的子网，而无需重新设计整个网络架构。</p>
+</li>
+<li>
+<p><strong>优化网络流量</strong>：通过合理规划子网，可以更好地控制和引导网络流量，确保关键应用和服务获得足够的带宽资源，优化网络资源的分配和使用。</p>
+</li>
+</ul>
+<p>综上所述，传统子网划分是网络设计和管理中的基础策略之一，对于构建高效、可扩展且安全的网络环境至关重要。</p>
+<h3>传统子网掩码划分子网方法</h3>
+<p>子网划分的目的如下，带着以下目的进行子网划分会非常有思路</p>
+<ul class="contains-task-list">
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> 确定给出的子网掩码可以创建多少个子网</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> 确定每个子网可容纳多少台主机</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> 确定有哪些合法的子网</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> 确定每个子网的广播地址是什么</li>
+<li class="task-list-item"><input type="checkbox" id="" disabled="" class="task-list-item-checkbox" checked=""> 确定每个子网可包含哪些主机地址</li>
+</ul>
+<h3>C 类子网掩码划分</h3>
+<h4>示例-1：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 192.168.10.0   |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.128 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-1</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 1 位给网络位，所以网络位是 25 位 (全为 1)，主机位是 7 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    10   .     0       |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 00001010 . 0|0000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 1|0000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     128    |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 1 位，可以创建<code class="notranslate"> 2^1=2</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 1 位后还剩  7 位 0，可以容乃 <code class="notranslate">2^7-2=126</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-128=128</code>个子网，因为是从 0 开始以 128 递增</li>
+<li>因此子网分别是<code class="notranslate">192.168.10.0</code> 和<code class="notranslate">192.168.10.128</code></li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">192.168.10.127</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">192.168.10.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 192.168.10.0     主机地址范围 192.168.10.1 - 192.168.10.126    广播地址 192.168.10.127</code></li>
+<li><code class="notranslate">网络地址 192.168.10.128   主机地址范围 192.168.10.129 - 192.168.10.254  广播地址 192.168.10.255</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>平时我们常说的电脑 IP 地址常混淆说成 <strong>IP 网络地址</strong>，其实应该准确的来说是<strong>IP 主机地址</strong>,而 <strong>IP 网络地址</strong> 常用于 IP 路由选择，比如<strong>路由汇总</strong>或者<strong>目的 IP 网络地址</strong></p>
+</blockquote>
+<h4>示例-2：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 192.168.10.0    |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.192 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-2</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 2 位给网络位，所以网络位是 26 位 (全为 1)，主机位是 6 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    10   .     0       |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 00001010 . 00|000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 11|000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     192    |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 2 位，可以创建<code class="notranslate"> 2^2=4</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 2 位后还剩  6 位 0，可以容乃 <code class="notranslate">2^6-2=62</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-192=64</code>个子网，因为是从 0 开始以 64 递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">192.168.10.0</code></li>
+<li><code class="notranslate">192.168.10.64</code></li>
+<li><code class="notranslate">192.168.10.128</code></li>
+<li><code class="notranslate">192.168.10.192</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">192.168.10.63</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">192.168.10.127</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">192.168.10.191</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">192.168.10.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 192.168.10.0     主机地址范围 192.168.10.1 - 192.168.10.62     广播地址 192.168.10.63</code></li>
+<li><code class="notranslate">网络地址 192.168.10.64    主机地址范围 192.168.10.65 - 192.168.10.126   广播地址 192.168.10.127</code></li>
+<li><code class="notranslate">网络地址 192.168.10.128   主机地址范围 192.168.10.129 - 192.168.10.190  广播地址 192.168.10.191</code></li>
+<li><code class="notranslate">网络地址 192.168.10.192   主机地址范围 192.168.10.193 - 192.168.10.254  广播地址 192.168.10.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-3：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 192.168.10.0    |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.224 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-3</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 3 位给网络位，所以网络位是 27 位 (全为 1)，主机位是 5 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    10   .     0       |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 00001010 . 000|00000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 111|00000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     224    |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 3 位，可以创建<code class="notranslate"> 2^3=8</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 3 位后还剩  5 位 0，可以容乃 <code class="notranslate">2^5-2=30</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-224=32</code>个子网，因为是从 0 开始以 32 递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">192.168.10.0</code></li>
+<li><code class="notranslate">192.168.10.32</code></li>
+<li><code class="notranslate">192.168.10.64</code></li>
+<li><code class="notranslate">192.168.10.96</code></li>
+<li><code class="notranslate">192.168.10.128</code></li>
+<li><code class="notranslate">192.168.10.160</code></li>
+<li><code class="notranslate">192.168.10.192</code></li>
+<li><code class="notranslate">192.168.10.224</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">192.168.10.31</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">192.168.10.63</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">192.168.10.95</code></li>
+<li>第 4 个子网的广播地址是<code class="notranslate">192.168.10.127</code></li>
+<li>第 5 个子网的广播地址是<code class="notranslate">192.168.10.159</code></li>
+<li>第 6 个子网的广播地址是<code class="notranslate">192.168.10.191</code></li>
+<li>第 7 个子网的广播地址是<code class="notranslate">192.168.10.223</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">192.168.10.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 192.168.10.0     主机地址范围 192.168.10.1 - 192.168.10.30     广播地址 192.168.10.31</code></li>
+<li><code class="notranslate">网络地址 192.168.10.32    主机地址范围 192.168.10.33 - 192.168.10.62    广播地址 192.168.10.63</code></li>
+<li><code class="notranslate">网络地址 192.168.10.64    主机地址范围 192.168.10.65 - 192.168.10.94    广播地址 192.168.10.95</code></li>
+<li><code class="notranslate">网络地址 192.168.10.96    主机地址范围 192.168.10.97 - 192.168.10.126   广播地址 192.168.10.127</code></li>
+<li><code class="notranslate">网络地址 192.168.10.128   主机地址范围 192.168.10.129 - 192.168.10.158  广播地址 192.168.10.159</code></li>
+<li><code class="notranslate">网络地址 192.168.10.160   主机地址范围 192.168.10.161 - 192.168.10.190  广播地址 192.168.10.191</code></li>
+<li><code class="notranslate">网络地址 192.168.10.192   主机地址范围 192.168.10.193 - 192.168.10.222  广播地址 192.168.10.223</code></li>
+<li><code class="notranslate">网络地址 192.168.10.224   主机地址范围 192.168.10.225 - 192.168.10.254  广播地址 192.168.10.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-4：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 192.168.10.0    |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.240 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-4</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 4 位给网络位，所以网络位是 28 位 (全为 1)，主机位是 4 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    10   .     0       |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 00001010 . 0000|0000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 1111|0000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     240    |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 4 位，可以创建<code class="notranslate"> 2^4=16</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 4 位后还剩  4 位 0，可以容乃 <code class="notranslate">2^4-2=14</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-240=16</code>个子网，因为是从 0 开始以 16 递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">192.168.10.0</code></li>
+<li><code class="notranslate">192.168.10.16</code></li>
+<li><code class="notranslate">192.168.10.32</code></li>
+<li><code class="notranslate">192.168.10.48</code></li>
+<li><code class="notranslate">192.168.10.64</code></li>
+<li><code class="notranslate">192.168.10.80</code></li>
+<li><code class="notranslate">192.168.10.96</code></li>
+<li><code class="notranslate">192.168.10.112</code></li>
+<li><code class="notranslate">192.168.10.128</code></li>
+<li><code class="notranslate">192.168.10.144</code></li>
+<li><code class="notranslate">192.168.10.160</code></li>
+<li><code class="notranslate">192.168.10.176</code></li>
+<li><code class="notranslate">192.168.10.208</code></li>
+<li><code class="notranslate">192.168.10.224</code></li>
+<li><code class="notranslate">192.168.10.240</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">192.168.10.15</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">192.168.10.31</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">192.168.10.47</code></li>
+<li>第 5 个子网的广播地址是<code class="notranslate">192.168.10.63</code></li>
+<li>第 6 个子网的广播地址是<code class="notranslate">192.168.10.79</code></li>
+<li>第 7 个子网的广播地址是<code class="notranslate">192.168.10.95</code></li>
+<li>第 8 个子网的广播地址是<code class="notranslate">192.168.10.111</code></li>
+<li>第 9 个子网的广播地址是<code class="notranslate">192.168.10.127</code></li>
+<li>第 10 个子网的广播地址是<code class="notranslate">192.168.10.143</code></li>
+<li>第 11 个子网的广播地址是<code class="notranslate">192.168.10.159</code></li>
+<li>第 12 个子网的广播地址是<code class="notranslate">192.168.10.175</code></li>
+<li>第 13 个子网的广播地址是<code class="notranslate">192.168.10.207</code></li>
+<li>第 14 个子网的广播地址是<code class="notranslate">192.168.10.223</code></li>
+<li>第 15 个子网的广播地址是<code class="notranslate">192.168.10.239</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">192.168.10.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 192.168.10.0     主机地址范围 192.168.10.1 - 192.168.10.14     广播地址 192.168.10.15</code></li>
+<li><code class="notranslate">网络地址 192.168.10.16    主机地址范围 192.168.10.17 - 192.168.10.30    广播地址 192.168.10.31</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 192.168.10.224   主机地址范围 192.168.10.225 - 192.168.10.238  广播地址 192.168.10.239</code></li>
+<li><code class="notranslate">网络地址 192.168.10.240   主机地址范围 192.168.10.241 - 192.168.10.254  广播地址 192.168.10.255</code></li>
+</ul>
+</li>
+</ul>
+<h3>B 类子网掩码划分</h3>
+<h4>示例-1：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 172.16.0.0    |
++-------------+---------------+
+| Subnet Mask | 255.255.128.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-1</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 1 位给网络位，所以网络位是 17 位 (全为 1)，主机位是 15 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 0|0000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 1|0000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    128   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 1 位，可以创建<code class="notranslate"> 2^1=2</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 1 位后还剩  15 位 0，可以容乃 <code class="notranslate">2^15-2=32766</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-128=128</code>个子网，因为是从 0 开始以 128 递增,因为 B 类子网划分是从第 3 Byte 开始进行的，所以</li>
+<li>因此子网分别是<code class="notranslate">172.16.0.0</code> 和<code class="notranslate">172.16.128.0</code></li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.127.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0     主机地址范围 172.16.0.1 - 172.16.127.254    广播地址 172.16.127.255</code></li>
+<li><code class="notranslate">网络地址 172.16.128.0   主机地址范围 172.16.128.1 - 172.16.255.254  广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-2：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 172.16.0.0    |
++-------------+---------------+
+| Subnet Mask | 255.255.192.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-2</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 2 位给网络位，所以网络位是 18 位 (全为 1)，主机位是 14 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 00|000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11|000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    192   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 2 位，可以创建<code class="notranslate"> 2^2=4</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 2 位后还剩  14 位 0，可以容乃 <code class="notranslate">2^14-2=16382</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-192=64</code>个子网，因为是从 0 开始以 64 递增,因为 B 类子网划分是从第 3 Byte 开始进行的，所以</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.64.0</code></li>
+<li><code class="notranslate">172.16.128.0</code></li>
+<li><code class="notranslate">172.16.192.0</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.63.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.127.255</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">172.16.191.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0     主机地址范围 172.16.0.1 - 172.16.63.254     广播地址 172.16.63.255</code></li>
+<li><code class="notranslate">网络地址 172.16.64.0    主机地址范围 172.16.64.1 - 172.16.127.254   广播地址 172.16.127.255</code></li>
+<li><code class="notranslate">网络地址 172.16.128.0   主机地址范围 172.16.128.1 - 172.16.191.254  广播地址 172.16.191.255</code></li>
+<li><code class="notranslate">网络地址 172.16.192.0   主机地址范围 172.16.192.1 - 172.16.255.254  广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-3：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 172.16.0.0    |
++-------------+---------------+
+| Subnet Mask | 255.255.240.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-3</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 4 位给网络位，所以网络位是 20 位 (全为 1)，主机位是 12 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 0000|0000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 1111|0000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    240   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 4 位，可以创建<code class="notranslate"> 2^4=16</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 4 位后还剩  12 位 0，可以容乃 <code class="notranslate">2^12-2=4094</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-240=16</code>个子网，因为是从 0 开始以 16 递增,因为 B 类子网划分是从第 3 Byte 开始进行的，第 4 Byte 还是和 C 类一样</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.16.0</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">172.16.224.0</code></li>
+<li><code class="notranslate">172.16.240.0</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.15.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.31.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 15 个子网的广播地址是<code class="notranslate">172.16.239.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0     主机地址范围 172.16.0.1 - 172.16.15.254     广播地址 172.16.15.255</code></li>
+<li><code class="notranslate">网络地址 172.16.16.0    主机地址范围 172.16.16.1 - 172.16.31.254    广播地址 172.16.31.255</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 172.16.224.0   主机地址范围 172.16.224.1 - 172.16.239.254  广播地址 172.16.239.255</code></li>
+<li><code class="notranslate">网络地址 172.16.240.0   主机地址范围 172.16.240.1 - 172.16.255.254  广播地址 172.16.239.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-4：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 172.16.0.0    |
++-------------+---------------+
+| Subnet Mask | 255.255.254.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-4</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 7 位给网络位，所以网络位是 23 位 (全为 1)，主机位是 9 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 0000000|0 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 1111111|0 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    254   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 7 位，可以创建<code class="notranslate"> 2^7=128</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 7 位后还剩  9 位 0，可以容纳 <code class="notranslate">2^9-2=510</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-254=2</code>个子网，因为是从 0 开始以 2 递增,因为 B 类子网划分是从第 3 Byte 开始进行的，第 4 Byte 还是和 C 类一样</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.2.0</code></li>
+<li><code class="notranslate">172.16.4.0</code></li>
+<li><code class="notranslate">172.16.6.0</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">172.16.252.0.</code></li>
+<li><code class="notranslate">172.16.254.0</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.1.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.3.255</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">172.16.5.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 127 个子网的广播地址是<code class="notranslate">172.16.253.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0     主机地址范围 172.16.0.1 - 172.16.1.254      广播地址 172.16.1.255</code></li>
+<li><code class="notranslate">网络地址 172.16.2.0     主机地址范围 172.16.2.1 - 172.16.3.254      广播地址 172.16.3.255</code></li>
+<li><code class="notranslate">网络地址 172.16.4.0     主机地址范围 172.16.4.1 - 172.16.5.254      广播地址 172.16.5.255</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 172.16.252.0   主机地址范围 172.16.252.1 - 172.16.253.254  广播地址 172.16.253.255</code></li>
+<li><code class="notranslate">网络地址 172.16.254.0   主机地址范围 172.16.254.1 - 172.16.255.254  广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-4：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 172.16.0.0    |
++-------------+---------------+
+| Subnet Mask | 255.255.254.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-4</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 7 位给网络位，所以网络位是 23 位 (全为 1)，主机位是 9 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 0000000|0 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 1111111|0 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    254   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 7 位，可以创建<code class="notranslate"> 2^7=128</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 7 位后还剩  9 位 0，可以容纳 <code class="notranslate">2^9-2=510</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-254=2</code>个子网，因为是从 0 开始以 2 递增,因为 B 类子网划分是从第 3 Byte 开始进行的，第 4 Byte 还是和 C 类一样</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.2.0</code></li>
+<li><code class="notranslate">172.16.4.0</code></li>
+<li><code class="notranslate">172.16.6.0</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">172.16.252.0.</code></li>
+<li><code class="notranslate">172.16.254.0</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.1.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.3.255</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">172.16.5.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 127 个子网的广播地址是<code class="notranslate">172.16.253.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0     主机地址范围 172.16.0.1 - 172.16.1.254      广播地址 172.16.1.255</code></li>
+<li><code class="notranslate">网络地址 172.16.2.0     主机地址范围 172.16.2.1 - 172.16.3.254      广播地址 172.16.3.255</code></li>
+<li><code class="notranslate">网络地址 172.16.4.0     主机地址范围 172.16.4.1 - 172.16.5.254      广播地址 172.16.5.255</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 172.16.252.0   主机地址范围 172.16.252.1 - 172.16.253.254  广播地址 172.16.253.255</code></li>
+<li><code class="notranslate">网络地址 172.16.254.0   主机地址范围 172.16.254.1 - 172.16.255.254  广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-5：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 172.16.0.0    |
++-------------+---------------+
+| Subnet Mask | 255.255.255.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-5</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 8 位给网络位，所以网络位是 8 位 (全为 1)，主机位是 8 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 00000000| . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111| . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 8 位，可以创建<code class="notranslate"> 2^8=256</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 8 位后还剩  8 位 0，可以容纳 <code class="notranslate">2^8-2=254</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-255=1</code>个子网，因为是从 0 开始以 1 递增,因为 B 类子网划分是从第 3 Byte 开始进行的，第 4 Byte 还是和 C 类一样</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.1.0</code></li>
+<li><code class="notranslate">172.16.2.0</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">172.16.254.0</code></li>
+<li><code class="notranslate">172.16.255.0</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.0.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.1.255</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">172.16.2.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 255 个子网的广播地址是<code class="notranslate">172.16.254.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0     主机地址范围 172.16.0.1 - 172.16.0.254      广播地址 172.16.0.255</code></li>
+<li><code class="notranslate">网络地址 172.16.1.0     主机地址范围 172.16.1.1 - 172.16.1.254      广播地址 172.16.1.255</code></li>
+<li><code class="notranslate">网络地址 172.16.2.0     主机地址范围 172.16.2.1 - 172.16.2.254      广播地址 172.16.2.255</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 172.16.254.0   主机地址范围 172.16.254.1 - 172.16.254.254  广播地址 172.16.255.255</code></li>
+<li><code class="notranslate">网络地址 172.16.255.0   主机地址范围 172.16.255.1 - 172.16.255.254  广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>这个子网比较特殊是 24 位掩码，看着像是 C 类地址，但是其实根据类别属于 B 类范围地址的子网</p>
+</blockquote>
+<h4>示例-6(重点注意)：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 172.16.0.0        |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.128 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-6</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 9 位给网络位，所以网络位是 9 位 (全为 1)，主机位是 7 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 00000000 . 0|0000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 1|0000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     128     |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 9 位，可以创建<code class="notranslate"> 2^9=512</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 9 位后还剩  7 位 0，可以容纳 <code class="notranslate">2^7-2=126</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-255=1</code>个子网，所以第 3 字节可以以 0、1、2 的方式递增，但是还需要考虑第 4 字节的 128，因此第 4 字节按 C 类合法子网计算的方式用 <code class="notranslate">256-128=128</code>，所以第 4 字节可以以 0、128 的方式递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.0.128</code></li>
+<li><code class="notranslate">172.16.1.0</code></li>
+<li><code class="notranslate">172.16.1.128</code></li>
+<li><code class="notranslate">172.16.2.0</code></li>
+<li><code class="notranslate">172.16.2.128</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">172.16.254.0</code></li>
+<li><code class="notranslate">172.16.254.128</code></li>
+<li><code class="notranslate">172.16.255.0</code></li>
+<li><code class="notranslate">172.16.255.128</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.0.127</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.0.255</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">172.16.1.127</code></li>
+<li>第 4 个子网的广播地址是<code class="notranslate">172.16.1.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 511 个子网的广播地址是<code class="notranslate">172.16.255.127</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0       主机地址范围 172.16.0.1 - 172.16.0.126        广播地址 172.16.0.127</code></li>
+<li><code class="notranslate">网络地址 172.16.0.128     主机地址范围 172.16.0.129 - 172.16.0.254      广播地址 172.16.0.255</code></li>
+<li><code class="notranslate">网络地址 172.16.1.0       主机地址范围 172.16.1.1 - 172.16.1.126        广播地址 172.16.1.127</code></li>
+<li><code class="notranslate">网络地址 172.16.1.128     主机地址范围 172.16.1.129 - 172.16.1.254      广播地址 172.16.1.255</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 172.16.254.0     主机地址范围 172.16.254.1 - 172.16.254.126    广播地址 172.16.254.127</code></li>
+<li><code class="notranslate">网络地址 172.16.254.128   主机地址范围 172.16.254.129 - 172.16.254.254  广播地址 172.16.254.255</code></li>
+<li><code class="notranslate">网络地址 172.16.255.0     主机地址范围 172.16.255.1 - 172.16.255.126    广播地址 172.16.255.127</code></li>
+<li><code class="notranslate">网络地址 172.16.255.128   主机地址范围 172.16.255.129 - 172.16.255.254  广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-7(重点注意)：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 172.16.0.0      |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.192 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-7</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 10 位给网络位，所以网络位是 10 位 (全为 1)，主机位是 6 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     172  .    16   .    0   .     0         |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 10101100 . 00010000 . 00000000 . 00|000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 11|000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .     192    |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 10 位，可以创建<code class="notranslate"> 2^10=1024</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 10 位后还剩  6 位 0，可以容纳 <code class="notranslate">2^6-2=62</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-255=1</code>个子网，所以第 3 字节可以以 0、1、2 的方式递增，但是还需要考虑第 4 字节的 192，因此第 4 字节按 C 类合法子网计算的方式用 <code class="notranslate">256-192=64</code>，所以第 4 字节可以以 0、64 的方式递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">172.16.0.0</code></li>
+<li><code class="notranslate">172.16.0.64</code></li>
+<li><code class="notranslate">172.16.0.128</code></li>
+<li><code class="notranslate">172.16.0.192</code></li>
+<li><code class="notranslate">172.16.1.0</code></li>
+<li><code class="notranslate">172.16.1.64</code></li>
+<li><code class="notranslate">172.16.1.128</code></li>
+<li><code class="notranslate">172.16.1.192</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">172.16.254.0</code></li>
+<li><code class="notranslate">172.16.254.64</code></li>
+<li><code class="notranslate">172.16.254.128</code></li>
+<li><code class="notranslate">172.16.254.192</code></li>
+<li><code class="notranslate">172.16.255.0</code></li>
+<li><code class="notranslate">172.16.255.64</code></li>
+<li><code class="notranslate">172.16.255.128</code></li>
+<li><code class="notranslate">172.16.255.192</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">172.16.0.63</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">172.16.0.127</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">172.16.0.191</code></li>
+<li>第 4 个子网的广播地址是<code class="notranslate">172.16.0.255</code></li>
+<li>第 5 个子网的广播地址是<code class="notranslate">172.16.1.63</code></li>
+<li>第 6 个子网的广播地址是<code class="notranslate">172.16.1.127</code></li>
+<li>第 7 个子网的广播地址是<code class="notranslate">172.16.1.191</code></li>
+<li>第 8 个子网的广播地址是<code class="notranslate">172.16.1.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 1023 个子网的广播地址是<code class="notranslate">172.16.255.191</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">172.16.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 172.16.0.0       主机地址范围 172.16.0.1 - 172.16.0.62        广播地址 172.16.0.63</code></li>
+<li><code class="notranslate">网络地址 172.16.0.64      主机地址范围 172.16.0.65 - 172.16.0.126      广播地址 172.16.0.127</code></li>
+<li><code class="notranslate">网络地址 172.16.0.128     主机地址范围 172.16.0.129 - 172.16.0.190     广播地址 172.16.0.191</code></li>
+<li><code class="notranslate">网络地址 172.16.0.192     主机地址范围 172.16.0.193 - 172.16.0.254     广播地址 172.16.0.255</code></li>
+<li><code class="notranslate">网络地址 172.16.1.0       主机地址范围 172.16.1.1 - 172.16.1.62        广播地址 172.16.1.63</code></li>
+<li><code class="notranslate">网络地址 172.16.1.64      主机地址范围 172.16.1.65 - 172.16.1.126      广播地址 172.16.1.127</code></li>
+<li><code class="notranslate">网络地址 172.16.1.128     主机地址范围 172.16.1.129 - 172.16.1.190     广播地址 172.16.1.191</code></li>
+<li><code class="notranslate">网络地址 172.16.1.192     主机地址范围 172.16.1.193 - 172.16.1.254     广播地址 172.16.1.255</code></li>
+<li><code class="notranslate">......省略......</code></li>
+<li><code class="notranslate">网络地址 172.16.254.0     主机地址范围 172.16.254.1 - 172.16.254.62    广播地址 172.16.254.63</code></li>
+<li><code class="notranslate">网络地址 172.16.254.64    主机地址范围 172.16.254.65 - 172.16.254.126  广播地址 172.16.254.127</code></li>
+<li><code class="notranslate">网络地址 172.16.254.128   主机地址范围 172.16.254.129 - 172.16.254.190 广播地址 172.16.254.191</code></li>
+<li><code class="notranslate">网络地址 172.16.254.192   主机地址范围 172.16.254.193 - 172.16.254.254 广播地址 172.16.254.255</code></li>
+<li><code class="notranslate">网络地址 172.16.255.0     主机地址范围 172.16.255.1 - 172.16.255.62    广播地址 172.16.255.63</code></li>
+<li><code class="notranslate">网络地址 172.16.255.64    主机地址范围 172.16.255.65 - 172.16.255.126  广播地址 172.16.255.127</code></li>
+<li><code class="notranslate">网络地址 172.16.255.128   主机地址范围 172.16.255.129 - 172.16.255.190 广播地址 172.16.255.191</code></li>
+<li><code class="notranslate">网络地址 172.16.255.192   主机地址范围 172.16.255.193 - 172.16.255.254 广播地址 172.16.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h3>A 类子网掩码划分</h3>
+<h4>示例-1：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 10.0.0.0      |
++-------------+---------------+
+| Subnet Mask | 255.255.0.0   |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-1</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 8 位给网络位，所以网络位是 8 位 (全为 1)，主机位是 16 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     10  .    0   .    0   .     0           |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00000000 . 00000000 . 00000000   |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111|. 00000000 . 00000000   |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    0   .     0        |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 8 位，可以创建<code class="notranslate"> 2^8=256</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 8 位后还剩 16 位 0，可以容乃 <code class="notranslate">2^16-2=65534</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-255=1</code>个子网，因为是从 0 开始以 255 递增,因为 A 类子网划分是从第 2 Byte 开始进行的，所以以  0、1、2 开始递增，第 3 Byte 以 0、255 开始递增，第 4 Byte 以 0、255</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">10.0.0.0</code></li>
+<li><code class="notranslate">10.1.0.0</code></li>
+<li><code class="notranslate">10.2.0.0</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">10.254.0.0</code></li>
+<li><code class="notranslate">10.255.0.0</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">10.0.255.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">10.1.255.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">10.2.255.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 255 个子网的广播地址是``10.254.255.255`</li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">10.255.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 10.0.0.0     主机地址范围 10.0.0.1 - 10.0.255.254      广播地址 10.0.255.255</code></li>
+<li><code class="notranslate">网络地址 10.1.0.0     主机地址范围 10.1.0.1 - 10.1.255.254      广播地址 10.1.255.255</code></li>
+<li><code class="notranslate">网络地址 10.2.0.0     主机地址范围 10.2.0.1 - 10.2.255.254      广播地址 10.2.255.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">网络地址 10.254.0.0   主机地址范围 10.254.0.1 - 10.254.255.254  广播地址 10.254.255.255</code></li>
+<li><code class="notranslate">网络地址 10.255.0.0   主机地址范围 10.255.0.1 - 10.255.255.254  广播地址 10.255.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-2：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+---------------+
+|  IP address | 10.0.0.0      |
++-------------+---------------+
+| Subnet Mask | 255.255.240.0 |
++-------------+---------------+
+</code></pre>
+<p>请根据 <strong>示例-2</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 12 位给网络位，所以网络位是 12 位 (全为 1)，主机位是 12 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     10  .    0   .    0   .     0           |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00000000 . 00000000 . 00000000   |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 1111|0000. 00000000   |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    240   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 12 位，可以创建<code class="notranslate"> 2^12=4096</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 12 位后还剩 12 位 0，可以容乃 <code class="notranslate">2^12-2=4094</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>每个子网有 <code class="notranslate">256-255=1</code>个子网，因为是从 0 开始以 255 递增,因为 A 类子网划分是从第 2 Byte 开始进行的，子网间隔为<code class="notranslate">256-255=1</code>开始递增，第 3 Byte 以子网间隔为 <code class="notranslate">256-240=16</code> 开始递增，第 4 Byte 以子网间隔为<code class="notranslate">256-255-1=255</code>开始递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">10.0.0.0</code></li>
+<li><code class="notranslate">10.0.16.0</code></li>
+<li><code class="notranslate">10.0.32.0</code></li>
+<li><code class="notranslate">10.0.48.0</code></li>
+<li><code class="notranslate">..省略..</code></li>
+<li><code class="notranslate">10.255.224.0</code></li>
+<li>`10.255.240.0</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">10.0.15.255</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">10.0.31.255</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">10.0.47.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 4095 个子网的广播地址是<code class="notranslate">10.255.239.255</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">10.255.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 10.0.0.0      主机地址范围 10.0.0.1 - 10.0.15.254         广播地址 10.0.15.255</code></li>
+<li><code class="notranslate">网络地址 10.0.16.0     主机地址范围 10.0.16.1 - 10.0.31.254        广播地址 10.0.31.255</code></li>
+<li><code class="notranslate">网络地址 10.0.32.0     主机地址范围 10.0.32.1 - 10.0.47.254        广播地址 10.0.47.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">网络地址 10.255.224.0  主机地址范围 10.255.224.1 - 10.255.239.254  广播地址 10.255.239.255</code></li>
+<li><code class="notranslate">网络地址 10.255.240.0  主机地址范围 10.255.240.1 - 10.255.255.254  广播地址 10.255.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h4>示例-3：</h4>
+<pre class="notranslate"><code class="notranslate">+-------------+-----------------+
+|  IP address | 10.0.0.0        |
++-------------+-----------------+
+| Subnet Mask | 255.255.255.192 |
++-------------+-----------------+
+</code></pre>
+<p>请根据 <strong>示例-2</strong> 解答如下问题</p>
+<blockquote>
+<p>先确定结构，根据掩码，因为主机划了 18 位给网络位，所以网络位是 12 位 (全为 1)，主机位是 12 位 (全为 0)</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     10  .    0   .    0   .     0           |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00000000 . 00000000 . 00000000   |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 11111111 . 11|000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .    255   .   192      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<ul>
+<li>给出的子网掩码可以创建多少个子网？
+<ul>
+<li>主机位借了 18 位，可以创建<code class="notranslate"> 2^18=262144</code>个子网</li>
+</ul>
+</li>
+<li>每个子网可容纳多少台主机?
+<ul>
+<li>主机位借了 18 位后还剩 6 位 0，可以容乃 <code class="notranslate">2^6-2=62</code>台</li>
+</ul>
+</li>
+<li>每个子网有多少合法的子网(子网块)?
+<ul>
+<li>因为 A 类子网划分是从第 2 Byte 开始进行的，子网间隔为<code class="notranslate">256-255=1</code>开始递增，第 3 Byte 以子网间隔为 <code class="notranslate">256-255=1</code> 开始递增，第 4 Byte 以子网间隔为<code class="notranslate">256-192=64</code>开始递增</li>
+<li>因此子网分别是
+<ul>
+<li><code class="notranslate">10.0.0.0</code></li>
+<li><code class="notranslate">10.0.0.64</code></li>
+<li><code class="notranslate">10.0.0.128</code></li>
+<li><code class="notranslate">10.0.0.192</code></li>
+<li><code class="notranslate">10.0.1.0</code></li>
+<li><code class="notranslate">..省略..</code></li>
+<li><code class="notranslate">10.255.255.128</code></li>
+<li><code class="notranslate">10.255.255.192</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>每个子网的广播地址是什么?
+<ul>
+<li>第 1 个子网的广播地址是<code class="notranslate">10.0.0.63</code></li>
+<li>第 2 个子网的广播地址是<code class="notranslate">10.0.0.127</code></li>
+<li>第 3 个子网的广播地址是<code class="notranslate">10.0.0.191</code></li>
+<li>第 4 个子网的广播地址是<code class="notranslate">10.0.0.255</code></li>
+<li>第 5 个子网的广播地址是<code class="notranslate">10.0.1.63</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li>第 262143 个子网的广播地址是<code class="notranslate">10.255.255.191</code></li>
+<li>最后的子网广播地址的主机位总是全为 <code class="notranslate">1</code>,也就是<code class="notranslate">10.255.255.255</code></li>
+</ul>
+</li>
+<li>每个子网可包含哪些主机地址?
+<ul>
+<li><code class="notranslate">网络地址 10.0.0.0        主机地址范围 10.0.0.1 - 10.0.0.62             广播地址 10.0.0.63</code></li>
+<li><code class="notranslate">网络地址 10.0.0.64       主机地址范围 10.0.0.65 - 10.0.0.126           广播地址 10.0.0.127</code></li>
+<li><code class="notranslate">网络地址 10.0.0.128      主机地址范围 10.0.0.129 - 10.0.0.190          广播地址 10.0.0.191</code></li>
+<li><code class="notranslate">网络地址 10.0.0.192      主机地址范围 10.0.0.192 - 10.0.0.254          广播地址 10.0.0.255</code></li>
+<li><code class="notranslate">......省略.......</code></li>
+<li><code class="notranslate">网络地址 10.255.255.128  主机地址范围 10.255.255.128 - 10.255.255.190  广播地址 10.255.255.191</code></li>
+<li><code class="notranslate">网络地址 10.255.255.192  主机地址范围 10.255.255.193 - 10.255.255.254  广播地址 10.255.255.255</code></li>
+</ul>
+</li>
+</ul>
+<h2>VLSM(可变长子网掩码)划分子网</h2>
+<p>VLSM（Variable Length Subnet Masking）是比传统子网掩码划分更先进子网掩码划分方式，它和传统子网掩码最大的不同就是允许网络管理员在同一个网络中使用长度不同的子网掩码，</p>
+<h3>VLSM 的主要作用</h3>
+<ol>
+<li>
+<p><strong>节省地址空间</strong>：通过为每个网络分配所需的最小地址数量，VLSM 可以最大限度地减少IP地址的浪费。</p>
+</li>
+<li>
+<p><strong>灵活性</strong>：它提供了更大的灵活性，允许网络管理员根据网络的大小和需求来设计网络。</p>
+</li>
+<li>
+<p><strong>层次化设计</strong>：VLSM 支持层次化的网络设计，使得大型网络可以被划分为更小的子网，便于管理和扩展。</p>
+</li>
+<li>
+<p><strong>路由优化</strong>：在一些情况下，使用 VLSM 可以减少路由表的大小，因为不需要为每个子网分配一个单独的路由。</p>
+</li>
+<li>
+<p><strong>网络扩展性</strong>：随着业务的发展，网络可能需要扩展或重新组织，VLSM 使得这种扩展和重组更加容易实现。</p>
+</li>
+<li>
+<p><strong>地址汇总</strong>：VLSM 允许进行地址汇总（route summarization），这可以减少路由器中路由信息的数量，从而提高网络效率。</p>
+</li>
+</ol>
+<h3>VLSM 的应用设计</h3>
+<p>VLSM 实际作用可以通过以下简单的示例来解释</p>
+<p>示例：先看以下按标准子网掩码划分的方式</p>
+<blockquote>
+<p>以下是网络层拓扑，不包括 2 层拓扑明细，<br>
+Router A 与 Router B 是通过 WAN 链路互联<br>
+其他 host 通过 LAN 与两台 Router 互联</p>
+</blockquote>
+<pre class="notranslate"><code class="notranslate">+--------+          +--------+                                                               +--------+          +--------+
+| host 2 |          | host 2 |                                                               | host 2 |          | host 2 |
++--------+          +--------+                                                               +--------+          +--------+
+     |                   |                                                                       |                    |   
+     |                   |           +----------+                             +----------+       |                    |
+------LAN 1-192.168.10.0/29----------| Router A |----WAN--192.168.10.16/29----| Router B |------LAN 4--192.168.10.16/29--------
+                                     +----------+                             +----------+ 
+                                      |                                        |
+                                      |                                        |
+            ----LAN 2-192.168.10.8/29----------                            ----------LAN 3--192.168.10.24/29-----
+             |                    |                                            |                    |
+             |                    |                                            |                    |
+        +--------+          +--------+                                      +--------+          +--------+
+        | host 6 |          | host 3 |                                      | host 2 |          | host 2 |
+        +--------+          +--------+                                      +--------+          +--------+
+
+</code></pre>
+<p>由于传统标准子网划分是基于固定长度的子网掩码，意味着所有子网在同一个网络中都使用相同的子网掩码，根据这一传统标准子网划分特性，发现以下很严重的问题，</p>
+<ul>
+<li>Router A 与 Router B WAN 互联只需要 2 个 主机地址 ,因此浪费 6 个主机地址空间</li>
+<li>LAN 2 共需要 10 个 主机地址，只能满足 6 个主机分配，还少 4 个主机地址</li>
+</ul>
+<p>为了解决上述传统子网掩码划分带来的空间浪费的弊端，下述案例采用 VLSM 进行划分</p>
+<pre class="notranslate"><code class="notranslate">+--------+          +--------+                                                               +--------+          +--------+
+| host 2 |          | host 2 |                                                               | host 2 |          | host 2 |
++--------+          +--------+                                                               +--------+          +--------+
+     |                   |                                                                       |                    |   
+     |                   |           +----------+                             +----------+       |                    |
+------LAN 1-192.168.10.0/29----------| Router A |----WAN--192.168.10.48/30----| Router B |------LAN 4--192.168.10.16/29--------
+                                     +----------+                             +----------+ 
+                                      |                                        |
+                                      |                                        |
+            ----LAN 2-192.168.10.32/28----------                            ----------LAN 3--192.168.10.24/29-----
+             |                    |                                            |                    |
+             |                    |                                            |                    |
+        +--------+          +--------+                                      +--------+          +--------+
+        | host 6 |          | host 3 |                                      | host 2 |          | host 2 |
+        +--------+          +--------+                                      +--------+          +--------+
+
+</code></pre>
+<p>这样就不会造成了过多的浪费，相对比较合理，虽然 LAN 2 还是多了 4 个主机地址，那这是难免的，计算主机地址，都是按 2 的次方计算，并不是十进制计算。多的就当是预留空间。</p>
+<h1>CIDR</h1>
+<p>CIDR(无类别域间路由) ，它是 ISP (互联网服务提供商)用来将大量地址分配给客户的一种方法。 ISP 以特定大小的块提供地址</p>
+<h2>CIDR 作用</h2>
+<p>它的设计初衷就是为了克服传统有类网络（Classful Networking）的局限性，因此 CIDR 不区分 A 类、B 类、C 类等有类网络的界限，而是允许在连续的 IP 地址块中灵活地分配不同大小的网络前缀。</p>
+<p>在 CIDR 体系下，网络不再严格遵循之前的类别划分（如 A 类网络的前 8 位定义网络，B 类的前 16 位定义网络等），而是通过网络前缀的 1 位数来定义网络的大小，这使得 IP 地址空间的分配更加高效和灵活。因此，我们不再谈论 CIDR 有“有类”和“无类”之分，CIDR 本身就是无类的，它替代了早期互联网中使用的有类网络分类系统。</p>
+<p>是现代网络通常使用CIDR，自从 1990 年代中期 CIDR 被引入以来，它已经成为 IP 地址分配和路由选择的业界标准。CIDR 摒弃了传统的 A 类、B 类、C 类地址的分类方式，采用变长的网络前缀来标识网络部分，这为 IP 地址的分配和管理带来了极高的灵活性。</p>
+<p>在现代网络实践中，CIDR的应用体现在以下几个关键方面：</p>
+<ol>
+<li>
+<p><strong>地址空间的有效利用</strong>：通过 VLSM（可变长子网掩码），CIDR 允许网络管理员根据实际需求动态调整子网的大小，从而更高效地使用有限的 IPv4 地址资源，同时也适用于 IPv6 地址的管理。</p>
+</li>
+<li>
+<p><strong>路由聚合</strong>：ISP 和大型网络利用 CIDR 进行路由聚合，将多个连续的网络前缀合并成一个单独的路由条目，显著减小了全局路由表的规模，降低了路由通告的复杂度，提升了网络性能。</p>
+</li>
+<li>
+<p><strong>自动化和动态配置</strong>：随着 SDN（软件定义网络）和网络自动化工具的发展，CIDR 原则被集成到自动化配置流程中，便于快速部署和调整网络结构，适应不断变化的业务需求。</p>
+</li>
+<li>
+<p><strong>云和虚拟化环境</strong>：在云计算和数据中心，CIDR 是基础架构即服务（IaaS）中网络配置的关键，用于动态分配 IP 地址给虚拟机、容器和网络服务，支持弹性伸缩和多租户隔离。</p>
+</li>
+<li>
+<p><strong>网络安全</strong>：通过细分网络，CIDR 可以帮助实现更细粒度的网络隔离和访问控制，增强安全性，支持微分段策略，保护关键资产。</p>
+</li>
+</ol>
+<h2>CIDR 格式</h2>
+<p>比如 192.168.0.0 是传统的 C 类私网，但是在 CIDR 中打破了这种分类边界，也可以像 B 类一样划分，但是需要 CIDR 进行标识，如下</p>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+------------------+
+| Decimal | IP Address  |  192.168.10.0/16 |      
++---------+-------------+------------------+
+
+</code></pre>
+<p>表示成子网掩码格式如下，<code class="notranslate">/16</code> 表示网络前缀，网络位 16 位，这就是个无类网络</p>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    10   .     0       |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 00001010 . 00000000   |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11111111 . 11111111 . 00000000 . 00000000   |
++---------+-------------+---------------------------------------------+
+| Decimal | Subnet Mask |     255  .    255   .     0    .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<p>以下表格列出了所有可能的子网掩码及其 CIDR 斜杠表示法。</p>
+<pre class="notranslate"><code class="notranslate">+--------------------+-------+
+|   Subnet Mask      |  CIDR | 
++--------------------+-------+
+|   255.0.0.0        |  /8   |
++--------------------+-------+
+|   255.128.0.0      |  /9   |
++--------------------+-------+
+|   255.192.0.0      |  /10  |
++--------------------+-------+
+|   255.224.0.0      |  /11  |
++--------------------+-------+
+|   255.240.0.0      |  /12  |
++--------------------+-------+
+|   255.248.0.0      |  /13  |
++--------------------+-------+
+|   255.252.0.0      |  /14  |
++--------------------+-------+
+|   255.254.0.0      |  /15  |
++--------------------+-------+
+|   255.255.0.0      |  /16  |
++--------------------+-------+
+|   255.255.128.0    |  /17  |
++--------------------+-------+
+|   255.255.192.0    |  /18  |
++--------------------+-------+
+|   255.255.224.0    |  /19  |
++--------------------+-------+
+|   255.255.240.0    |  /20  |
++--------------------+-------+
+|   255.255.248.0    |  /21  |
++--------------------+-------+
+|   255.255.252.0    |  /22  |
++--------------------+-------+
+|   255.255.254.0    |  /23  |
++--------------------+-------+
+|   255.255.255.0    |  /24  |
++--------------------+-------+
+|   255.255.255.128  |  /25  |
++--------------------+-------+
+|   255.255.255.192  |  /26  |
++--------------------+-------+
+|   255.255.255.224  |  /27  |
++--------------------+-------+
+|   255.255.255.240  |  /28  |
++--------------------+-------+
+|   255.255.255.248  |  /29  |
++--------------------+-------+
+|   255.255.255.252  |  /30  |
++--------------------+-------+
+
+</code></pre>
+<h1>有类网络和无类网络</h1>
+<p>在早期还没有子网掩码诞生的时候，是以传统分类方式划分 IP，但是这种方式非常浪费资源，而且没有层次感，以下是区别有类和五类网络的示例</p>
+<ul>
+<li>有类网络 <code class="notranslate">172.17.0.0</code></li>
+<li>无类网络 <code class="notranslate">172.17.0.0/16</code></li>
+<li>无类网络 <code class="notranslate">172.17.0.0/25</code></li>
+<li>有类网络 <code class="notranslate">192.168.1.0</code></li>
+<li>无类网络 <code class="notranslate">192.168.1.0/16</code></li>
+<li>无类网络 <code class="notranslate">192.168.1.0/24</code></li>
+</ul>
+<p>从上述示例中可以发现有类网络是根据类别固定死范围的网络，而且子网掩码是隐式的，而无类网络通常以 CIDR 及 显式子网掩码方式表达</p>
+<blockquote>
+<p>IP 路由协议中，仅 RIPv1 只支持有类网络</p>
+</blockquote>
+<blockquote>
+<p>在有类网络分类系统中，子网掩码是隐含的，意味着不需要显式地宣告每个 IP 地址的子网掩码，因为它们可以根据 IP 地址的第 1 个 Byte 的首位自动推断出来</p>
+</blockquote>
+<h1>连续的网络</h1>
+<p>连续的网络指的是在网络地址分配上形成无缝序列、没有地址空缺的网络</p>
+<h2>连续的网络示例1</h2>
+<pre class="notranslate"><code class="notranslate">172.16.0.0 /16
+172.16.1.0 /16
+172.16.2.0 /16
+</code></pre>
+<h2>连续的网络示例2</h2>
+<pre class="notranslate"><code class="notranslate">172.16.1.0 /26
+172.16.64.0 /26
+172.16.128.0 /26
+</code></pre>
+<h2>连续的网络示例3</h2>
+<pre class="notranslate"><code class="notranslate">172.16.1.0 /17
+172.16.2.0 /18
+172.16.3.0 /19
+</code></pre>
+<h1>IP 路由汇总</h1>
+<p>IP 路由汇总就是俗称的网络汇总，这无论是在静态路由还是动态路由中都会经常应用到的技术，路由汇总有以下特点</p>
+<blockquote>
+<p>如果只会汇总成<code class="notranslate">0.0.0.0</code>默认路由或是<code class="notranslate">172.16.0.0/16</code>,那将阻碍你的网络技术上限!</p>
+</blockquote>
+<ul>
+<li>简化路由表，减少路由条目数量</li>
+<li>提高路由器的处理效率并节省网络资源</li>
+<li>对外部网络隐藏了内部的网络结构细节，增强了网络的安全性</li>
+</ul>
+<p>比如将几个连续的/24子网汇总为一个/22的网络。这样，路由器只需维护这个汇总的路由条目，而不是每个子网的具体条目</p>
+<h2>路由汇总计算</h2>
+<p>如果已经掌握了 CIDR 的知识点这会非常简单</p>
+<h3>示例1:</h3>
+<p>需要对以下两个子网掩码进行路由汇总</p>
+<ul>
+<li>子网 1: 192.168.16.0/24</li>
+<li>子网 2: 192.168.17.0/24</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .    16   .     0       |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 11000000 . 10101000 . 0001000|0 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 11000000 . 10101000 . 0001000|1 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |     192  .    168   .     17   .     0      |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+</code></pre>
+<p>计算过程如下</p>
+<ul>
+<li><strong>将子网地址转换为 2 进制格：</strong> 已通过上述</li>
+<li><strong>找到公共前缀：</strong> 从左向右(高位到低位)，需要一直比较两个子网的 2 进制串，直到找到第一个不同的位来确定 <strong>最长</strong>的公共前缀，这里最长的公共前缀中有 23 位 2 进制是相同的</li>
+<li><strong>确定汇总路由的掩码：</strong> 既然找到了 23 位相同的前缀，这意味着汇总路由的网络部分将是这 23 位，而剩余的 9 位用于子网划分。因此，汇总路由的 CIDR 表示法中的掩码是 <strong><code class="notranslate">/23</code></strong>（因为 IPv4 地址总共有 32 位，23 位网络位意味着有 23 位的前缀）</li>
+<li><strong>计算汇总的网络地址：</strong> 根据共同的前缀，汇总的网络地址是 <code class="notranslate">192.168.16.0</code>，加上 <code class="notranslate">/23</code> 的掩码，得到汇总路由为：<code class="notranslate">192.168.16.0/23</code></li>
+</ul>
+<h3>示例2:</h3>
+<p>需要对以下 4 个子网掩码进行路由汇总</p>
+<ul>
+<li>子网 1: 10.10.0.0/16</li>
+<li>子网 2: 10.11.0.0/16</li>
+<li>子网 3: 10.12.0.0/16</li>
+<li>子网 4: 10.13.0.0/16</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00001|010 . 00000000 . 00000000  |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00001|011 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00001|100 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 00001|101 . 00000000 . 00000000  |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+
+</code></pre>
+<p>计算过程如下</p>
+<ul>
+<li><strong>将子网地址转换为 2 进制格：</strong> 已通过上述</li>
+<li><strong>找到公共前缀：</strong> 从左向右(高位到低位)，需要一直比较两个子网的 2 进制串，直到找到第一个不同的位来确定 <strong>最长</strong>的公共前缀，这里最长的公共前缀中有 13 位 2 进制是相同的</li>
+<li><strong>确定汇总路由的掩码：</strong> 既然找到了 13 位相同的前缀，这意味着汇总路由的网络部分将是这 13 位，而剩余的 19 位用于子网划分。因此，汇总路由的 CIDR 表示法中的掩码是 <strong><code class="notranslate">/13</code></strong>（因为 IPv4 地址总共有 32 位，13 位网络位意味着有 13 位的前缀）</li>
+<li><strong>计算汇总的网络地址：</strong> 根据共同的前缀，汇总的网络地址是 <code class="notranslate">10.8.0.0</code>，加上 <code class="notranslate">/13</code> 的掩码，得到汇总路由为：<code class="notranslate">10.8.0.0/13</code></li>
+</ul>
+<h4>示例 2.1</h4>
+<p>由于上述示例 2 中 <code class="notranslate">10.8.0.0/13</code> 网络包含的子网不止上述几个，可能还有以下子网没包含</p>
+<ul>
+<li><code class="notranslate">10.9.0.0/16</code></li>
+<li><code class="notranslate">10.14.0.0/16</code></li>
+</ul>
+<p>但是这两个子网由于网络部署问题，分别部署在不同的网络中，比如这两个子网归属以下网络</p>
+<ul>
+<li><code class="notranslate">10.9.0.0/16</code>属于<code class="notranslate">10.0.0.0/12</code>的子网</li>
+<li><code class="notranslate">10.14.0.0/16</code>属于<code class="notranslate">10.0.0.0/11</code>的子网</li>
+</ul>
+<p>这种情况对于上述<code class="notranslate">10.8.0.0/13</code>这个网络来说<code class="notranslate">10.9.0.0/16</code>和<code class="notranslate">10.14.0.0/16</code>就是不连续的网络，此时示例 2 中 4 个子网需要分开进行路由汇总，否则网络会出现问题</p>
+<ol>
+<li>先计算以下两个子网路由汇总</li>
+</ol>
+<ul>
+<li>子网 1: 10.10.0.0/16</li>
+<li>子网 2: 10.11.0.0/16</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |      10  .     10    .      0   .     0     |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 0000101|0 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 00001010 . 0000101|1 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |      10  .     11    .      0   .     0     |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits   .  8 Bits  .  8 Bits   |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte   .  1 Byte  .  1 Byte   |
++-----------------------+---------------------------------------------+
+</code></pre>
+<p>计算过程如下</p>
+<ul>
+<li><strong>将子网地址转换为 2 进制格：</strong> 已通过上述</li>
+<li><strong>找到公共前缀：</strong> 从左向右(高位到低位)，需要一直比较两个子网的 2 进制串，直到找到第一个不同的位来确定 <strong>最长</strong>的公共前缀，这里最长的公共前缀中有 15 位 2 进制是相同的</li>
+<li><strong>确定汇总路由的掩码：</strong> 既然找到了 15 位相同的前缀，这意味着汇总路由的网络部分将是这 15 位，而剩余的 17 位用于子网划分。因此，汇总路由的 CIDR 表示法中的掩码是 <strong><code class="notranslate">/15</code></strong>（因为 IPv4 地址总共有 32 位，15 位网络位意味着有 15 位的前缀）</li>
+<li><strong>计算汇总的网络地址：</strong> 根据共同的前缀，汇总的网络地址是 <code class="notranslate">10.10.0.0</code>，加上 <code class="notranslate">/15</code> 的掩码，得到汇总路由为：<code class="notranslate">10.10.0.0/15</code></li>
+</ul>
+<ol start="2">
+<li>再计算以下两个子网路由汇总</li>
+</ol>
+<ul>
+<li>子网 3: 10.12.0.0/16</li>
+<li>子网 4: 10.13.0.0/16</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">+---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |      10  .     12    .      0   .     0     |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 0000110|0 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | Subnet Mask | 00001010 . 0000110|1 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Decimal | IP Address  |      10  .     13    .      0   .     0     |      
++-----------------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits   .  8 Bits  .  8 Bits   |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte   .  1 Byte  .  1 Byte   |
++-----------------------+---------------------------------------------+
+</code></pre>
+<p>计算过程如下</p>
+<ul>
+<li><strong>将子网地址转换为 2 进制格：</strong> 已通过上述</li>
+<li><strong>找到公共前缀：</strong> 从左向右(高位到低位)，需要一直比较两个子网的 2 进制串，直到找到第一个不同的位来确定 <strong>最长</strong>的公共前缀，这里最长的公共前缀中有 15 位 2 进制是相同的</li>
+<li><strong>确定汇总路由的掩码：</strong> 既然找到了 15 位相同的前缀，这意味着汇总路由的网络部分将是这 15 位，而剩余的 17 位用于子网划分。因此，汇总路由的 CIDR 表示法中的掩码是 <strong><code class="notranslate">/15</code></strong>（因为 IPv4 地址总共有 32 位，15 位网络位意味着有 15 位的前缀）</li>
+<li><strong>计算汇总的网络地址：</strong> 根据共同的前缀，汇总的网络地址是 <code class="notranslate">10.10.0.0</code>，加上 <code class="notranslate">/15</code> 的掩码，得到汇总路由为：<code class="notranslate">10.12.0.0/15</code></li>
+</ul>
+<h3>示例3:</h3>
+<p>需要对以下 3 个子网掩码进行路由汇总</p>
+<ul>
+<li>子网 1: 10.64.0.0/16</li>
+<li>子网 2: 10.65.0.0/16</li>
+<li>子网 3: 10.66.0.0/16</li>
+</ul>
+<pre class="notranslate"><code class="notranslate">
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 010000|00 . 00000000 . 00000000  |      
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 010000|01 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+| Binary  | IP Address  | 00001010 . 010000|10 . 00000000 . 00000000  |
++---------+-------------+---------------------------------------------+
+|         Bit           |  8 Bits  .  8 Bits  .  8 Bits  .  8 Bits    |
++-----------------------+---------------------------------------------+
+|         Byte          |  1 Byte  .  1 Byte  .  1 Byte  .  1 Byte    |
++-----------------------+---------------------------------------------+
+
+</code></pre>
+<p>计算过程如下</p>
+<ul>
+<li><strong>将子网地址转换为 2 进制格：</strong> 已通过上述</li>
+<li><strong>找到公共前缀：</strong> 从左向右(高位到低位)，需要一直比较两个子网的 2 进制串，直到找到第一个不同的位来确定 <strong>最长</strong>的公共前缀，这里最长的公共前缀中有 14 位 2 进制是相同的</li>
+<li><strong>确定汇总路由的掩码：</strong> 既然找到了 14 位相同的前缀，这意味着汇总路由的网络部分将是这 14 位，而剩余的 18 位用于子网划分。因此，汇总路由的 CIDR 表示法中的掩码是 <strong><code class="notranslate">/14</code></strong>（因为 IPv4 地址总共有 32 位，14 位网络位意味着有 14 位的前缀）</li>
+<li><strong>计算汇总的网络地址：</strong> 根据共同的前缀，汇总的网络地址是 <code class="notranslate">10.64.0.0</code>，加上 <code class="notranslate">/14</code> 的掩码，得到汇总路由为：<code class="notranslate">10.64.0.0/14</code></li>
+</ul>
+<h1>反掩码</h1>
+<p>反掩码（Inverse Mask 或 Bitmask）是一种网络术语，它通常用于指定子网掩码中哪些位是“不关心”的（即不用于路由决策或地址分配的位），而哪些位是“关心”的（即用于路由决策或地址分配的位）。反掩码通常与子网掩码一起使用，以确定网络中哪些部分可以用于主机地址。</p>
+<p>子网掩码用于定义一个 IP 地址的网络部分和主机部分。例如，一个标准的子网掩码 <code class="notranslate">255.255.255.0</code> 表示前 24 位是网络部分，最后8位是主机部分。在这个例子中，反掩码将是 0.0.0.255，因为反掩码只关心最后 8 位的主机部分</p>
+<h3>反掩码的作用</h3>
+<ul>
+<li><strong>路由选择：</strong> 在路由选择过程中，路由器会使用反掩码来确定哪些目的网络是可达的，比如以下动态路由选择会使用到反掩码
+<ul>
+<li>EIGRP</li>
+<li>OSPF</li>
+</ul>
+</li>
+<li><strong>访问控制列表（ACL）：</strong> 在配置ACL时，反掩码可以用来指定哪些IP地址范围是允许或拒绝的。</li>
+<li><strong>地址聚合：</strong> 在进行地址聚合或路由汇总时，反掩码可以帮助确定哪些地址可以被合并到一个更大的网络中。</li>
+</ul>
+<p>在实际应用中，反掩码通常不如子网掩码那样常用，但在网络设备的配置和路由策略中，它会经常用到。</p>
+<h3>示例</h3>
+<ul>
+<li>
+<p>子网掩码:<code class="notranslate">255.255.255.0</code></p>
+</li>
+<li>
+<p>反掩码: <code class="notranslate">0.0.0.255</code></p>
+</li>
+<li>
+<p>子网掩码:<code class="notranslate">255.255.248.0</code></p>
+</li>
+<li>
+<p>转换成反掩码: <code class="notranslate">0.0.7.255</code></p>
+</li>
+<li>
+<p>子网掩码:<code class="notranslate">255.255.255.255</code></p>
+</li>
+<li>
+<p>转换成反掩码: <code class="notranslate">0.0.0.0</code></p>
+</li>
+</ul>
+<blockquote>
+<p>关于反掩码在 IP 路由中常见的应用:<br>
+在以下 IP 路由命令 <code class="notranslate">ip route 0.0.0.0 0.0.0.0 192.168.1.1</code> 中，第一个 0.0.0.0 是目标地址，它用通配符表示任何可能的目的地 IP 地址，即这是一个“默认”路由。<br>
+而第二个 0.0.0.0 在这个上下文中实际上是一个子网掩码（subnet mask）的简写，但更准确地说是“通配符掩码”或“反向子网掩码”（wildcard mask）。在子网掩码中，1 表示网络部分，而 0 表示主机部分。在通配符掩码中，逻辑是相反的：1表示“不关心”或“任何值”，而 0表 示“必须匹配”。<br>
+因此，0.0.0.0 作为通配符掩码意味着对于目标IP地址的每一位，我们都不关心它是什么值，即匹配所有可能的值。这允许该路由规则匹配任何目标IP地址，从而使它成为一个默认路由。</p>
+</blockquote></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+</div>
+    <div id="footer">Copyright © <span id="year"></span><a href="https://Benchary.github.io"> Blog Benchary </a>
+<p>
+<span id="runday"></span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a>
+</p>
+
+<script>
+if(""!=""){
+    var now=new Date();
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("year").innerHTML=now.getFullYear();
+    if(""!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
+    else{document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";}
+}
+</script>
+</div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Benchary/Benchary.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+</script>
+
+
+</html>
