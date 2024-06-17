@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
 <head>
     <meta content="text/html; charset=utf-8" http-equiv="content-type" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href="//cdn.staticfile.net/Primer/21.0.7/primer.css" rel="stylesheet" />
-    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+    <link rel="icon" href="https://static.meekdai.com/favicon.svg"><script>
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
@@ -13,8 +13,8 @@
 <meta property="og:title" content="详解IPv4编址">
 <meta property="og:description" content="IP 编址指的的是 IP 地址编排技术，它涉及 IP 地址的分配和管理过程。">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://Benchary.github.io/post/xiang-jie-IPv4-bian-zhi.html">
-<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<meta property="og:url" content="https://kaokit.com/post/xiang-jie-IPv4-bian-zhi.html">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Meekdai/meekdai.github.io/logo64.jpg">
 <title>详解IPv4编址</title>
 
 
@@ -48,7 +48,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <div id="header">
 <h1 class="postTitle">详解IPv4编址</h1>
 <div class="title-right">
-    <a href="https://Benchary.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+    <a href="https://kaokit.com" id="buttonHome" class="btn btn-invisible circle" title="首页">
         <svg class="octicon" width="16" height="16">
             <path id="pathHome" fill-rule="evenodd"></path>
         </svg>
@@ -1923,23 +1923,23 @@ Router A 与 Router B 是通过 WAN 链路互联<br>
 而第二个 0.0.0.0 在这个上下文中实际上是一个子网掩码（subnet mask）的简写，但更准确地说是“通配符掩码”或“反向子网掩码”（wildcard mask）。在子网掩码中，1 表示网络部分，而 0 表示主机部分。在通配符掩码中，逻辑是相反的：1表示“不关心”或“任何值”，而 0表 示“必须匹配”。<br>
 因此，0.0.0.0 作为通配符掩码意味着对于目标IP地址的每一位，我们都不关心它是什么值，即匹配所有可能的值。这允许该路由规则匹配任何目标IP地址，从而使它成为一个默认路由。</p>
 </blockquote></div>
-<div style="font-size:small;margin-top:8px;float:right;"></div>
+<div style="font-size:small;margin-top:8px;float:right;">❤️ 转载文章请注明出处，谢谢！❤️</div>
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
 <div class="comments" id="comments"></div>
 </div>
-    <div id="footer">Copyright © <span id="year"></span><a href="https://Benchary.github.io"> Blog Benchary </a>
-<p>
+    <div id="footer">Copyright © <span id="year"></span><a href="https://kaokit.com"> Benchary </a>
+<p><a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2023005488号</a>
 <span id="runday"></span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a>
 </p>
 
 <script>
-if(""!=""){
+if("06/17/2024"!=""){
     var now=new Date();
-    var startSite=new Date("");
+    var startSite=new Date("06/17/2024");
     var diff=now.getTime()-startSite.getTime();
     var diffDay=Math.floor(diff/(1000*60*60*24));
     document.getElementById("year").innerHTML=now.getFullYear();
-    if(""!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
+    if("苏ICP备2023005488号"!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
     else{document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";}
 }
 </script>
@@ -1974,7 +1974,7 @@ function utterancesTheme(theme){
     iframe.contentWindow.postMessage(message,'https://utteranc.es');
 }
 if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
-console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
+console.log("\n %c Gmeek main https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
 </script>
 
 <script>
