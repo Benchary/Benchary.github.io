@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="//cdn.staticfile.net/Primer/21.0.7/primer.css" rel="stylesheet" />
+    <link rel="icon" href="https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 关于 WordPress 网站备份迁移计划还是继续执行了，困扰很久，这么折腾，为什么一定要做迁移计划，基于以下3点：  
+   - 验证 WordPress 网站可移植性  
+   - 验证 WordPress 网站数据备份方案  
+   - 验证 WordPress 网站数据云端下沉本地方案  
+ 
+ 所以 WordPress 网站备份迁移，尽管过程繁琐，但备份迁移计划至关重要。">
+<meta property="og:title" content="WordPress 云端完整备份迁移至本地">
+<meta property="og:description" content="> 关于 WordPress 网站备份迁移计划还是继续执行了，困扰很久，这么折腾，为什么一定要做迁移计划，基于以下3点：  
+   - 验证 WordPress 网站可移植性  
+   - 验证 WordPress 网站数据备份方案  
+   - 验证 WordPress 网站数据云端下沉本地方案  
+ 
+ 所以 WordPress 网站备份迁移，尽管过程繁琐，但备份迁移计划至关重要。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaokit.com/post/WordPress%20-yun-duan-wan-zheng-bei-fen-qian-yi-zhi-ben-di.html">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Meekdai/meekdai.github.io/logo64.jpg">
+<title>WordPress 云端完整备份迁移至本地</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+</style>
+<style>.markdown-alert{padding:0.5rem 1rem;margin-bottom:1rem;border-left:.25em solid var(--borderColor-default,var(--color-border-default));}.markdown-alert .markdown-alert-title {display:flex;font-weight:var(--base-text-weight-medium,500);align-items:center;line-height:1;}.markdown-alert>:first-child {margin-top:0;}.markdown-alert>:last-child {margin-bottom:0;}</style><style>.markdown-alert.markdown-alert-note {border-left-color:var(--borderColor-accent-emphasis, var(--color-accent-emphasis));background-color:var(--color-accent-subtle);}.markdown-alert.markdown-alert-note .markdown-alert-title {color: var(--fgColor-accent,var(--color-accent-fg));}</style><style>.markdown-alert.markdown-alert-warning {border-left-color:var(--borderColor-attention-emphasis, var(--color-attention-emphasis));background-color:var(--color-attention-subtle);}.markdown-alert.markdown-alert-warning .markdown-alert-title {color: var(--fgColor-attention,var(--color-attention-fg));}</style>
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">WordPress 云端完整备份迁移至本地</h1>
+<div class="title-right">
+    <a href="https://kaokit.com" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Benchary/Benchary.github.io/issues/6" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>关于 WordPress 网站备份迁移计划还是继续执行了，困扰很久，这么折腾，为什么一定要做迁移计划，基于以下3点：</p>
+</blockquote>
+<ul>
+<li>验证 WordPress 网站可移植性</li>
+<li>验证 WordPress 网站数据备份方案</li>
+<li>验证 WordPress 网站数据云端下沉本地方案</li>
+</ul>
+<p>所以 WordPress 网站备份迁移，尽管过程繁琐，但备份迁移计划至关重要。数据云端备份下沉本地是保障动态网站稳定运行的关键措施，不容忽视。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+<span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>数据备份<span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">数据导出</span><span class="pl-k">|</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>数据迁移<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+<span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-k">|</span><span class="pl-s">数据导入</span><span class="pl-k">|</span><span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>结束迁移<span class="pl-pds"><span class="pl-sg">]</span></span></span>
+<span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span>测试验证<span class="pl-pds"><span class="pl-sg">]</span></span></span></pre></div>
+<h1>1. 迁移前准备</h1>
+<ul>
+<li>全环境资产梳理</li>
+<li>线上云端数据备份</li>
+<li>线上云端数据导出</li>
+<li>线下本地环境准备</li>
+</ul>
+<h2>1.1 全环境资产梳理</h2>
+<ul>
+<li>云端环境:腾讯云轻量应用服务器</li>
+<li>本地环境:VMware Workstation Pro 17</li>
+</ul>
+<table role="table">
+<thead>
+<tr>
+<th>硬件/软件</th>
+<th>名称</th>
+<th>云端环境</th>
+<th>本地环境</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>硬件</td>
+<td>CPU</td>
+<td>2核</td>
+<td>2核</td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>内存</td>
+<td>2GB</td>
+<td>1.5GB</td>
+</tr>
+<tr>
+<td>硬件</td>
+<td>硬盘</td>
+<td>40GB</td>
+<td>50GB</td>
+</tr>
+<tr>
+<td>软件</td>
+<td>操作系统</td>
+<td>Debian Linux 12</td>
+<td>Debian Linux 12</td>
+</tr>
+<tr>
+<td>软件</td>
+<td>网站服务</td>
+<td>Nginx 1.22.1</td>
+<td>Nginx 1.22.1</td>
+</tr>
+<tr>
+<td>软件</td>
+<td>数据库</td>
+<td>MariaDB 10.11.6</td>
+<td>MariaDB 10.11.6</td>
+</tr>
+<tr>
+<td>软件</td>
+<td>数据库管理</td>
+<td>phpMyAdmin</td>
+<td>phpMyAdmin</td>
+</tr>
+</tbody>
+</table>
+<h2>1.2 云端数据备份</h2>
+<p>迁移前给轻量应用服务器最后打一次快照</p>
+<p>进入 <strong>【轻量应用服务器】</strong>  的菜单，选择  <strong>【快照】</strong>  ，点击 <strong>【创建快照】</strong></p>
+<h2>1.3 云端数据导出</h2>
+<p>做接下来的操作之前，务必先停用 Nginx 服务</p>
+<p><code class="notranslate">systemctl stop nginx</code></p>
+<h3>1.3.1 网站数据打包</h3>
+<p>进入 nginx 发布目录，压缩打包 WordPress 整个目录为 <code class="notranslate">wordpress.zip</code></p>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c1">cd</span> /var/www/
+zip wordpress.zip ./wordpress -r</pre></div>
+<p>导出 WordPress SQL 数据</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">mysqldump -u root -p wordpress <span class="pl-k">&gt;</span> wordpress.sql</pre></div>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p><code class="notranslate">-p</code> 后面跟着的是 wordpress 的数据库名称，默认名称是 wordpress</p>
+</div>
+<h3>1.3.2 网站数据导出</h3>
+<p>将上述 WordPress 网站文件及 SQL 数据通过 WinSCP 传输工具下载到本地</p>
+<h2>1.2 本地环境准备</h2>
+<p><del>操作系统安装及LNMP部署省略</del>，采用  <code class="notranslate">apt-get install</code> 方式即可</p>
+<h3>1.2.1 数据库配置</h3>
+<p><del>数据库安装配置过程省略</del>，安装完成后，做以下操作</p>
+<ul>
+<li>创建 WordPress 数据库</li>
+<li>创建 WordPress 数据库用户名及密码</li>
+</ul>
+<h3>1.2.2 站点服务配置</h3>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p>集合了phpMyAdmin及wordpress的配置</p>
+</div>
+<p>编辑本地环境的 nginx 配置文件</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">vim /etc/nginx/sites-available/wordpress</pre></div>
+<p>将以下 phpMyAdmin 的 nginx 配置 (含 wordpress 的配置) 复制到此配置文件</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">server {
+    listen 80<span class="pl-k">;</span>
+    root /var/www/html<span class="pl-k">;</span>
+    index index.php<span class="pl-k">;</span>
+    location /wordpress {
+        try_files <span class="pl-smi">$uri</span> <span class="pl-smi">$uri</span>/ /wordpress/index.php<span class="pl-k">?</span><span class="pl-smi">$args</span><span class="pl-k">;</span>
+    }
+    location /phpmyadmin {
+        <span class="pl-c1">alias</span> /usr/share/phpmyadmin<span class="pl-k">;</span>
+        index index.php<span class="pl-k">;</span>
+    }
+    location <span class="pl-k">~</span> <span class="pl-cce">\.</span>php$ {
+        include snippets/fastcgi-php.conf<span class="pl-k">;</span>
+        fastcgi_pass unix:/var/run/php/php8.2-fpm.sock<span class="pl-k">;</span>
+    }
+    location <span class="pl-k">~</span> /<span class="pl-cce">\.</span>ht {
+        deny all<span class="pl-k">;</span>
+    }
+}</pre></div>
+<p>Nginx 服务重载重启</p>
+<pre class="notranslate"><code class="notranslate">systemcl reload nginx
+systemcl restart nginx
+</code></pre>
+<h1>2.  数据迁移</h1>
+<p>迁移过程就是将之前从云端导出到本地的网站数据，再导入到本地的过程</p>
+<h2>2.1 数据库 SQL 导入</h2>
+<p>通过 winscp 将已导出到本地的 <strong>wordpress.sql</strong> 上传到本地环境的 <code class="notranslate">/root</code> 目录<br>
+然后执行以下数据库的 SQL 导入</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">mysql -u root -p wordpress <span class="pl-k">&lt;</span> ./wordpress.sql</pre></div>
+<h3>2.1.1 SQL 值调整</h3>
+<p>此时的数据库中还保留着迁移前的 wordpress 中的 url，通过 phpMyAdmin 对 wordpress 数据库中的 <code class="notranslate">wp_options</code> 和 <code class="notranslate">wp_posts</code> 做以下调整</p>
+<ul>
+<li>调整 <strong>wp_options</strong> 表</li>
+</ul>
+<p>找到 <code class="notranslate">wp_options</code> 表中的 <code class="notranslate">siteurl</code> 和 <code class="notranslate">home</code> ，将这两个字段的 <code class="notranslate">option_value</code> 值都改成 <code class="notranslate">http://当前IP/wordpress</code></p>
+<ul>
+<li>调整 <strong>wp_posts</strong> 表</li>
+</ul>
+<p>找到 <code class="notranslate">wp_posts</code> 表,然后编辑默认的 SQL ，重新输入以下 SQL ，将所有内容的 URL 全部替换成新环境 URL</p>
+<div class="highlight highlight-source-sql"><pre class="notranslate"><span class="pl-k">UPDATE</span> wp_posts <span class="pl-k">SET</span> post_content <span class="pl-k">=</span> REPLACE(post_content, <span class="pl-s"><span class="pl-pds">'</span>迁移前URL<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>迁移后URL<span class="pl-pds">'</span></span>);</pre></div>
+<h2>2.2 网站文件导入</h2>
+<p>利用 phpMyadmin 调整完数据库 SQL 的值后就停用 nginx ,因为接下来要导入 WordPress 网站文件</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">systemctl stop nginx</pre></div>
+<p>再用 WinSCP 将之前从云端导出到本地的 <strong>wordpress.zip</strong> 文件上传以下目录</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">/var/www/html/</pre></div>
+<p>进入此目录并解压 wordpress.zip 文件</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c1">cd</span> /var/www/html/
+unzip ./wordress.zip</pre></div>
+<p>设置 wordpress 目录网站权限</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">chown www-data:www-data /var/www/html/wordpress -R
+chown 755 /var/www/html/wordpress -R </pre></div>
+<h1>3. 结束迁移</h1>
+<p>迁移后先重启数据库，再启用网站服务</p>
+<p>重启数据库</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">systemctl restart mysqld</pre></div>
+<p>重启网站服务</p>
+<pre class="notranslate"><code class="notranslate">systemctl start nginx
+</code></pre>
+<h1>4. 测试验证</h1>
+<p>访问以下 URL 测试是否正常打开 WordPress 每个页面</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">http://当前IP/wordpress</pre></div>
+<p>访问以下 URL 测试是否正常打开 WordPress 的后台管理</p>
+<div class="highlight highlight-source-shell"><pre class="notranslate">http://当前IP/wordpress/wp-admin</pre></div>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p>别忘了检查网站的 <strong>首页</strong> 地址是否是当前地址</p>
+</div>
+<h1>5. 附:迁移的重要事项</h1>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p><strong>一致性</strong><br>
+注意保证两个环境的操作系统及软件应用程序的版本，包括账号密码都尽量保证一致。提高迁移的成功率</p>
+</div>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p><strong>错误回滚</strong><br>
+提前做好备份，有快照功能的打快照，提高迁移过程中的容错率</p>
+</div>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p><strong>网络环境</strong><br>
+不要在DDNS环境下进行任何的操作无论是迁移还是备份，都会影响WordPress的迁移，反正我尝试了，没成功，保证网络结构简单，不要在复杂的网络环境下操作，尤其是与WordPress的网络中间隔了好几个安全设备的什么,比如WAF的防火墙之类的，即使有，请将策略全部放行，迁移成功后再启用策略，这是迁移成功的关键。</p>
+</div></div>
+<div style="font-size:small;margin-top:8px;float:right;">❤️ 转载文章请注明出处，谢谢！❤️</div>
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+</div>
+    <div id="footer">Copyright © <span id="year"></span><a href="https://kaokit.com"> Benchary </a>
+<p><a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2023005488号</a>
+<span id="runday"></span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a>
+</p>
+
+<script>
+if("06/17/2024"!=""){
+    var now=new Date();
+    var startSite=new Date("06/17/2024");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("year").innerHTML=now.getFullYear();
+    if("苏ICP备2023005488号"!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
+    else{document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";}
+}
+</script>
+</div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek main https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Benchary/Benchary.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+</script>
+
+
+</html>
