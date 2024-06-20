@@ -1,5 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Benchary</title><link>https://kaokit.com</link><description>简单即是一切。</description><copyright>Benchary</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg</url><title>avatar</title><link>https://kaokit.com</link></image><lastBuildDate>Thu, 20 Jun 2024 05:41:44 +0000</lastBuildDate><managingEditor>Benchary</managingEditor><ttl>60</ttl><webMaster>Benchary</webMaster><item><title>WLAN、WiFi、Hotspot(热点)之间的关系及区别</title><link>https://kaokit.com/post/WLAN%E3%80%81WiFi%E3%80%81Hotspot%28-re-dian-%29-zhi-jian-de-guan-xi-ji-qu-bie.html</link><description>先了解下概念&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Benchary</title><link>https://kaokit.com</link><description>简单即是一切。</description><copyright>Benchary</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg</url><title>avatar</title><link>https://kaokit.com</link></image><lastBuildDate>Thu, 20 Jun 2024 05:45:31 +0000</lastBuildDate><managingEditor>Benchary</managingEditor><ttl>60</ttl><webMaster>Benchary</webMaster><item><title>windows 内置网络包捕获器的使用</title><link>https://kaokit.com/post/windows%20-nei-zhi-wang-luo-bao-bu-huo-qi-de-shi-yong.html</link><description>正常情况下都会使用 Wireshark 进行网络数据包的捕获及分析，但是现在受于环境限制，电脑被禁止安装 Wireshark  软件，于是我找到了微软官方的网络包捕获器，比如 Microsoft Network Monitor 这款工具，但是客户还是不让装，办法还是比问题多，可以通过 cmd 命令提示符使用 Windows 内置的网络包捕获功能，操作如下：&#13;
+&#13;
+## 网络包数据捕获&#13;
+&#13;
+以**管理员身份**运行 cmd ，输入以下命令后，开始捕获网络数据包&#13;
+&#13;
+```bash&#13;
+C:\Windows\system32&gt;netsh trace start capture=yes report=disabled&#13;
+&#13;
+跟踪配置:&#13;
+-------------------------------------------------------------------&#13;
+状态:             正在运行&#13;
+跟踪文件:         C:\Users\user\AppData\Local\Temp\NetTraces\NetTrace.etl&#13;
+附加:             关闭&#13;
+循环:           启用&#13;
+最大大小:           512 MB&#13;
+报告:             已禁用&#13;
+```&#13;
+此时行任意的网络活动都将被捕获器捕获&#13;
+&#13;
+输入以下命令停用捕获器，然后会在`C:\Users\[管理员用户名]\AppData\Local\Temp\NetTraces\`目录下生成名为`NetTrace.etl`的文件，这个文件内容就是捕获到的所有网络数据包数据信息。</description><guid isPermaLink="true">https://kaokit.com/post/windows%20-nei-zhi-wang-luo-bao-bu-huo-qi-de-shi-yong.html</guid><pubDate>Thu, 20 Jun 2024 05:45:07 +0000</pubDate></item><item><title>WLAN、WiFi、Hotspot(热点)之间的关系及区别</title><link>https://kaokit.com/post/WLAN%E3%80%81WiFi%E3%80%81Hotspot%28-re-dian-%29-zhi-jian-de-guan-xi-ji-qu-bie.html</link><description>先了解下概念&#13;
 - WLAN (Wireless Local Area Network) 是无线局域网的含义，可以理解为商业化技术名词 ，包含了多种技术标准的无线局域网的统称&#13;
 - Wi-Fi 指的是 Wi-Fi 联盟的商标，是一种基于 IEEE 802.11 标准的 WLAN 技术，由于 Wi-Fi 的普及，生活中已将  Wi-Fi 成为实际的 WLAN的专属名词&#13;
 -  Hotspot 即无线热点的含义，指在提供 Wi-Fi 接入的网络服务，它的作用可以将 Wi-Fi 的网络覆盖范围延申，方便人们手持移动端无线网络的使用，目前无论是平板电脑、还是普通 PC，甚至是智能手机均提供 Hotspot 功能&#13;
