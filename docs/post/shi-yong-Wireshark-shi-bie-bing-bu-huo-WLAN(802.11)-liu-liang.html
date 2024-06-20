@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark_colorblind" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="//cdn.staticfile.net/Primer/21.0.7/primer.css" rel="stylesheet" />
+    <link rel="icon" href="https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="## 案例
+想用 WireShark 捕获分析 WLAN 流量，但是发现捕获到的封包中并未识别到 802.11 的数据帧，而是被转义成了 Ethernet 数据帧信息，这样就屏蔽了真实的 802.11 信息 （如下信息），对WLAN 数据包分析造成了一定的阻碍。">
+<meta property="og:title" content="使用Wireshark识别并捕获WLAN(802.11)流量">
+<meta property="og:description" content="## 案例
+想用 WireShark 捕获分析 WLAN 流量，但是发现捕获到的封包中并未识别到 802.11 的数据帧，而是被转义成了 Ethernet 数据帧信息，这样就屏蔽了真实的 802.11 信息 （如下信息），对WLAN 数据包分析造成了一定的阻碍。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://kaokit.com/post/shi-yong-Wireshark-shi-bie-bing-bu-huo-WLAN%28802.11%29-liu-liang.html">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Meekdai/meekdai.github.io/logo64.jpg">
+<title>使用Wireshark识别并捕获WLAN(802.11)流量</title>
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+</style>
+<style>.markdown-alert{padding:0.5rem 1rem;margin-bottom:1rem;border-left:.25em solid var(--borderColor-default,var(--color-border-default));}.markdown-alert .markdown-alert-title {display:flex;font-weight:var(--base-text-weight-medium,500);align-items:center;line-height:1;}.markdown-alert>:first-child {margin-top:0;}.markdown-alert>:last-child {margin-bottom:0;}</style><style>.markdown-alert.markdown-alert-note {border-left-color:var(--borderColor-accent-emphasis, var(--color-accent-emphasis));background-color:var(--color-accent-subtle);}.markdown-alert.markdown-alert-note .markdown-alert-title {color: var(--fgColor-accent,var(--color-accent-fg));}</style><style>.markdown-alert.markdown-alert-tip {border-left-color:var(--borderColor-success-emphasis, var(--color-success-emphasis));background-color:var(--color-success-subtle);}.markdown-alert.markdown-alert-tip .markdown-alert-title {color: var(--fgColor-success,var(--color-success-fg));}</style><style>.markdown-alert.markdown-alert-warning {border-left-color:var(--borderColor-attention-emphasis, var(--color-attention-emphasis));background-color:var(--color-attention-subtle);}.markdown-alert.markdown-alert-warning .markdown-alert-title {color: var(--fgColor-attention,var(--color-attention-fg));}</style>
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">使用Wireshark识别并捕获WLAN(802.11)流量</h1>
+<div class="title-right">
+    <a href="https://kaokit.com" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Benchary/Benchary.github.io/issues/13" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h2>案例</h2>
+<p>想用 WireShark 捕获分析 WLAN 流量，但是发现捕获到的封包中并未识别到 802.11 的数据帧，而是被转义成了 Ethernet 数据帧信息，这样就屏蔽了真实的 802.11 信息 （如下信息），对WLAN 数据包分析造成了一定的阻碍。</p>
+<pre class="notranslate"><code class="notranslate">&gt; Frame 31: 714 bytes on wire (5712 bits), 714 bytes captured (5712 bits) on interface \Device\NPF_{6EE416E4-A3E4-4C74-9DDC-&gt; FC5AA6ECC4C8}, id 0
+v Ethernet II, Src: Intel_89:af:cb (5c:80:b6:89:af:cb), Dst: Cisco_ff:fc:04 (00:08:e3:ff:fc:04)
+     &gt; Destination: Cisco_ff:fc:04 (00:08:e3:ff:fc:04)
+     &gt; Source: Intel_89:af:cb (5c:80:b6:89:af:cb)
+     &gt; Type: IPv4 (0x0800)
+&gt; Internet Protocol Version 4, Src: 172.16.209.84 (172.16.209.84), Dst: 20.231.121.79 (20.231.121.79)
+&gt; Transmission Control Protocol, Src Port: instl-bootc (1068), Dst Port: http (80), Seq: 1780, Ack: 1, Len: 660
+&gt; [4 Reassembled TCP Segments (2439 bytes): #29(339), #30(1440), #36(1440), #31(660)]
+&gt; Hypertext Transfer Protocol
+</code></pre>
+<h2>分析</h2>
+<p>其实通常是因为无线网络适配器的驱动程序或操作系统将无线帧转换为了以太网帧格式，以下是一些可能导致这种情况的原因：</p>
+<ul>
+<li><strong>1.操作系统的网络栈：</strong>
+<ul>
+<li>操作系统的网络栈可能会将无线帧（如802.11 帧）转换为以太网帧（Ethernet II 帧），然后再传递给上层协议处理。这是因为操作系统通常对以太网帧处理进行了优化，以提高效率。</li>
+</ul>
+</li>
+<li><strong>2.无线网卡驱动程序：</strong>
+<ul>
+<li>某些无线网卡的驱动程序可能在将数据发送到操作系统之前，将无线帧封装在以太网帧中。这使得操作系统可以无需区分有线或无线来源，统一处理网络数据。</li>
+</ul>
+</li>
+<li><strong>3.虚拟接口：</strong>
+<ul>
+<li>在某些操作系统中，无线网络接口可能被虚拟化为以太网类型的接口，以简化网络配置和数据处理。</li>
+</ul>
+</li>
+<li><strong>4.监听模式：</strong>
+<ul>
+<li>如果无线网卡被置于监控模式，Wireshark 应该能够看到原始的 802.11 无线帧。但如果它没有被置于监控模式，或者操作系统默认处理了这些帧，Wireshark 看到的可能是以太网封装。</li>
+</ul>
+</li>
+</ul>
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p><p><strong>Wireshark 本身并不改变数据包的封装类型，但它在显示数据包时，可能会根据操作系统提供的信息来标识封装类型。</strong></p>
+</div>
+<h2>解决办法</h2>
+<p>获取原始 802.11 数据帧办法如下，下载安装 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=4865" rel="nofollow">Microsoft Network Monitor</a>,并开始捕获。</p>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p><strong>Microsoft Network Monitor</strong> 是微软官方的数据包捕获器，可以捕获到原始 802.11 帧</p>
+</div>
+<p>以下是通过 Microsoft Network Monitor 捕获到 802.11 数据帧，并将其保存至 <code class="notranslate">.cap</code> 格式文件</p>
+<pre class="notranslate"><code class="notranslate">  Frame: Number = 4, Captured Frame Length = 146, MediaType = WiFi
++ WiFi: [Unencrypted Data] .T....., (I) 
++ LLC: Unnumbered(U) Frame, Command Frame, SSAP = SNAP(Sub-Network Access Protocol), DSAP = SNAP(Sub-Network Access Protocol)
++ Snap: EtherType = Internet IP (IPv4), OrgCode = XEROX CORPORATION
++ Ipv4: Src = 172.16.209.84, Dest = 172.16.7.99, Next Protocol = TCP, Packet ID = 60106, Total IP Length = 82
++ Tcp: Flags=...AP..., SrcPort=1041, DstPort=HTTP Alternate(8080), PayloadLen=42, Seq=462750881 - 462750923, Ack=2748106622, Win=510
+  Http: HTTP Payload, URL: 
+  TLSSSLData: Transport Layer Security (TLS) Payload Data
++ TLS: TLS Rec Layer-1 SSL Application Data
+</code></pre>
+<p>再用 WireShark 打开上述由 Microsoft Network Monitor 捕获到的<code class="notranslate"> .cap</code>格式文件，如下就可以显示原始 802.11 的数据帧信息了</p>
+<pre class="notranslate"><code class="notranslate">&gt; Frame 4: 146 bytes on wire (1168 bits), 146 bytes captured (1168 bits)
+&gt; NetMon 802.11 capture header
+&gt; 802.11 radio information
+&gt; IEEE 802.11 Data, Flags: .......T
+&gt; Logical-Link Control
+&gt; Internet Protocol Version 4, Src: 172.16.209.84 (172.16.209.84), Dst: proxy.sub.tfme.com (172.16.7.99)
+&gt; Transmission Control Protocol, Src Port: danf-ak2 (1041), Dst Port: http-alt (8080), Seq: 1, Ack: 96, Len: 42
+</code></pre>
+<h2>WireShark 捕获原始 802.11 数据帧</h2>
+<p>如果需要直接使用 WireShark 捕获原始 802.11 数据帧，需要将 WLAN 网卡启用<strong>监听模式</strong>，</p>
+<blockquote>
+<p>如何判断 WLAN 网卡是否支持 <strong>监听模式</strong>可以通过 Microsoft Network Monitor 捕获 WLAN 数据包分析，如下图显示 <code class="notranslate">Not Monitor Mode</code> 就是不支持。</p>
+<pre class="notranslate"><code class="notranslate">- WiFi: [Unencrypted Data] .T....., (I) 
+ - MetaData: 
+    Version: 2 (0x2)
+    Length: 32 (0x20)
+  - OpMode: Extensible Station Mode
+     StationMode:           (...............................0) Not Station Mode
+     APMode:                (..............................0.) Not AP Mode
+     ExtensibleStationMode: (.............................1..) Extensible Station Mode
+     Unused:                (.0000000000000000000000000000...)
+     MonitorMode:           (0...............................) Not Monitor Mode
+    Flags: 4294967295 (0xFFFFFFFF)
+    RemData: Outbound
+    TimeStamp: 05/08/2024, 01:33:45.909746 UTC
+</code></pre>
+</blockquote>
+<p>然后点击<code class="notranslate">开始</code>运行 <code class="notranslate">nmwifi</code> 工具，它允许用户切换无线网卡到监控模式。</p>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p><strong>nmwifi</strong> 是安装 <strong>Microsoft Network Monitor</strong> 时自带的，使用 <strong>nmwifi</strong> 之前，需要将无线网卡设置为未连接任何网络的状态,</p>
+</div>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p><strong>WireShark</strong> 捕获原始 802.11 数据帧期间，切忌关闭 <strong>nmwifi</strong></p>
+</div>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p>如果运行 <strong>nmwifi</strong> 提示 <strong>“⚠ 没有可用的网络适配器”</strong>，表示 WLAN 网卡并不支持 <strong>监听模式</strong></p>
+</div></div>
+<div style="font-size:small;margin-top:8px;float:right;">❤️ 转载文章请注明出处，谢谢！❤️</div>
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+</div>
+    <div id="footer">Copyright © <span id="year"></span><a href="https://kaokit.com"> Benchary </a>
+<p><a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2023005488号</a>
+<span id="runday"></span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a>
+</p>
+
+<script>
+if("06/17/2024"!=""){
+    var now=new Date();
+    var startSite=new Date("06/17/2024");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("year").innerHTML=now.getFullYear();
+    if("苏ICP备2023005488号"!=""){document.getElementById("runday").innerHTML=" • "+"网站运行"+diffDay+"天"+" • ";}
+    else{document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";}
+}
+</script>
+</div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek main https://github.com/Meekdai/Gmeek \n\n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Benchary/Benchary.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+</script>
+
+
+</html>
