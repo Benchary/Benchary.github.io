@@ -1,5 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Benchary</title><link>https://kaokit.com</link><description>简单即是一切。</description><copyright>Benchary</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg</url><title>avatar</title><link>https://kaokit.com</link></image><lastBuildDate>Tue, 18 Jun 2024 07:37:03 +0000</lastBuildDate><managingEditor>Benchary</managingEditor><ttl>60</ttl><webMaster>Benchary</webMaster><item><title>关于 Telnet 探活任意 TCP 端口的细节问题</title><link>https://kaokit.com/post/guan-yu-%20Telnet%20-tan-huo-ren-yi-%20TCP%20-duan-kou-de-xi-jie-wen-ti.html</link><description>作为计算机网络技术人员经常会接到类似的故障请求：&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Benchary</title><link>https://kaokit.com</link><description>简单即是一切。</description><copyright>Benchary</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg</url><title>avatar</title><link>https://kaokit.com</link></image><lastBuildDate>Thu, 20 Jun 2024 05:41:44 +0000</lastBuildDate><managingEditor>Benchary</managingEditor><ttl>60</ttl><webMaster>Benchary</webMaster><item><title>WLAN、WiFi、Hotspot(热点)之间的关系及区别</title><link>https://kaokit.com/post/WLAN%E3%80%81WiFi%E3%80%81Hotspot%28-re-dian-%29-zhi-jian-de-guan-xi-ji-qu-bie.html</link><description>先了解下概念&#13;
+- WLAN (Wireless Local Area Network) 是无线局域网的含义，可以理解为商业化技术名词 ，包含了多种技术标准的无线局域网的统称&#13;
+- Wi-Fi 指的是 Wi-Fi 联盟的商标，是一种基于 IEEE 802.11 标准的 WLAN 技术，由于 Wi-Fi 的普及，生活中已将  Wi-Fi 成为实际的 WLAN的专属名词&#13;
+-  Hotspot 即无线热点的含义，指在提供 Wi-Fi 接入的网络服务，它的作用可以将 Wi-Fi 的网络覆盖范围延申，方便人们手持移动端无线网络的使用，目前无论是平板电脑、还是普通 PC，甚至是智能手机均提供 Hotspot 功能&#13;
+&#13;
+从上述概念中基本了解了 WLAN 包含了 Wi-Fi 和 Hotspot 两种无线网技术&#13;
+&#13;
+那现在有问题，我笔记本电脑无线接入家里的 Wi-Fi 然后访问外部互联网 ，因为有其他需求，我需要将电脑启用 windows 内置的Hotspot ，然后将手机接入电脑的无线热点访问互联网，此时 Hotspot 就相当于 Wi-Fi 中继器一样，我认为此时手机获取的 IP 地址应该是和电脑属于同一子网，但是实际出乎了我的意料，尽然是和电脑两个不同的子网。</description><guid isPermaLink="true">https://kaokit.com/post/WLAN%E3%80%81WiFi%E3%80%81Hotspot%28-re-dian-%29-zhi-jian-de-guan-xi-ji-qu-bie.html</guid><pubDate>Thu, 20 Jun 2024 05:41:22 +0000</pubDate></item><item><title>关于 Telnet 探活任意 TCP 端口的细节问题</title><link>https://kaokit.com/post/guan-yu-%20Telnet%20-tan-huo-ren-yi-%20TCP%20-duan-kou-de-xi-jie-wen-ti.html</link><description>作为计算机网络技术人员经常会接到类似的故障请求：&#13;
 - 网页无法访问&#13;
 - 某台服务器或者设备无法SSH远程&#13;
 &#13;
