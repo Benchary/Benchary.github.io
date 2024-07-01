@@ -4,7 +4,7 @@
     <meta content="text/html; charset=utf-8" http-equiv="content-type" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link href="//cdn.staticfile.net/Primer/21.0.7/primer.css" rel="stylesheet" />
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
     <link rel="icon" href="https://img.picgo.net/2024/06/18/truec1f100947e01f7d9.jpeg"><script>
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
@@ -265,8 +265,10 @@ chown 755 /var/www/html/wordpress -R </pre></div>
 不要在DDNS环境下进行任何的操作无论是迁移还是备份，都会影响WordPress的迁移，反正我尝试了，没成功，保证网络结构简单，不要在复杂的网络环境下操作，尤其是与WordPress的网络中间隔了好几个安全设备的什么,比如WAF的防火墙之类的，即使有，请将策略全部放行，迁移成功后再启用策略，这是迁移成功的关键。</p>
 </div></div>
 <div style="font-size:small;margin-top:8px;float:right;">❤️ 转载文章请注明出处，谢谢！❤️</div>
+
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
 <div class="comments" id="comments"></div>
+
 </div>
     <div id="footer">Copyright © <span id="year"></span><a href="https://kaokit.com"> Benchary </a>
 <p><a href="https://beian.miit.gov.cn/" target="_blank">苏ICP备2023005488号</a>
@@ -321,6 +323,8 @@ console.log("\n %c Gmeek main https://github.com/Meekdai/Gmeek \n\n","padding:5p
 <script>
 document.getElementById("pathHome").setAttribute("d",IconList["home"]);
 document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
 
 function openComments(){
     cm=document.getElementById("comments");
